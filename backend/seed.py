@@ -12,6 +12,7 @@ from app.auth import hash_password
 from app.database import Base, SessionLocal, engine
 from datetime import datetime, timedelta
 
+from app.migrations import mettre_a_jour
 from app.models import Admin, Article, Hotel, Photo, Service, Slide
 
 DEMO_SERVICES = [
@@ -112,6 +113,7 @@ def main():
     args = p.parse_args()
 
     Base.metadata.create_all(bind=engine)
+    mettre_a_jour(engine)
     password = args.password or getpass.getpass("Mot de passe admin (8 caractères min.) : ")
     if len(password) < 8:
         raise SystemExit("Mot de passe trop court (8 caractères minimum).")

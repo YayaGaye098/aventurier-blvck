@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService, errorMessage } from '../core/api.service';
 import { track, TrackType } from '../core/track';
-import { AGENCE, ArticleCard, Avis, Evenement, Hotel, Photo, Service, Slide } from '../core/models';
+import { AGENCE, ArticleCard, Avis, Evenement, Hotel, Photo, Reglages, Service, Slide } from '../core/models';
 import { PostCard } from './post-card';
 import { SiteFooter } from './site-footer';
 import { SiteHeader } from './site-header';
@@ -45,6 +45,12 @@ export class Home implements OnDestroy {
   enPause = signal(false);
   private slideTimer?: ReturnType<typeof setTimeout>;
 
+  reglages = signal<Reglages>({ apropos_video: null });
+  sonApropos = signal(false);
+  /** Vidéo ouverte en plein écran (vidéo d'un hôtel). */
+  videoPlein = signal<string | null>(null);
+  readonly rien = () => {};
+
   services = signal<Service[]>([]);
   evenements = signal<Evenement[]>([]);
   avis = signal<Avis[]>([]);
@@ -77,6 +83,7 @@ export class Home implements OnDestroy {
   feedback = signal<{ ok: boolean; text: string } | null>(null);
 
   constructor() {
+    this.api.reglages().subscribe({ next: (r) => this.reglages.set(r), error: () => {} });
     this.api.slides().subscribe({
       next: (s) => { if (s.length) { this.slides.set(s); this.allerA(0); } },
       error: () => {},
@@ -130,6 +137,7 @@ export class Home implements OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   onKey(e: KeyboardEvent) {
+    if (e.key === 'Escape' && this.videoPlein()) { this.videoPlein.set(null); return; }
     const i = this.lightbox();
     if (i === null) return;
     if (e.key === 'Escape') this.lightbox.set(null);
@@ -182,6 +190,13 @@ Nombre d'enfants : `;
   reserverEvenement(e: Evenement) {
     const date = new Date(e.date_debut).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
     this.reserver(`${e.titre} (${date})`);
+  }
+
+  basculerSonApropos(video: HTMLVideoElement) {
+    const actif = !this.sonApropos();
+    video.muted = !actif;
+    if (actif) video.play().catch(() => {});
+    this.sonApropos.set(actif);
   }
 
   basculerSon(id: number, video: HTMLVideoElement) {
@@ -251,5 +266,5 @@ ${url}`);
 }
 
 function fallback(file: string, i: number): Photo {
-  return { id: -i - 1, titre: 'Aventure', image: `/uploads/${file}`, categorie: null, actif: true, created_at: null };
+  return { id: -i - 1, titre: 'Aventure', image: `/uploads/${file}`, media_type: 'image', categorie: null, actif: true, created_at: null };
 }

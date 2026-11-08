@@ -13,8 +13,8 @@ const VIDE = (): SlideInput => ({ titre: '', accent: '', texte: '', ordre: 0, ac
   imports: [FormsModule],
   template: `
     <div class="adm-head">
-      <div><h1>Carrousel de l’accueil</h1>
-        <p>Les photos et vidéos qui défilent en haut du site, avec leur message. Les photos changent toutes les 2 secondes, les vidéos passent jusqu’au bout.</p></div>
+      <div><h1>Page d’accueil</h1>
+        <p><strong>Carrousel</strong> : les photos et vidéos qui défilent en haut du site, avec leur message. Les photos changent toutes les 2 secondes, les vidéos passent jusqu’au bout.</p></div>
       <button class="btn btn-primary" type="button" (click)="ouvrir()"><i class="fas fa-plus"></i> Nouvelle diapo</button>
     </div>
 
@@ -49,6 +49,26 @@ const VIDE = (): SlideInput => ({ titre: '', accent: '', texte: '', ordre: 0, ac
         <div class="adm-card adm-empty"><i class="fas fa-photo-film"></i>Aucune diapo : la photo par défaut est affichée. Ajoutez vos plus belles images !</div>
       }
     </div>
+
+    <section class="adm-card apropos">
+      <h2>Vidéo du bloc « Qui sommes-nous »</h2>
+      <p>Une vidéo de présentation (vous, vos sorties, l’ambiance) affichée à côté du texte « Un guide passionné, pas une agence anonyme ». Elle se lance sans le son ; le visiteur peut activer le son.</p>
+      <div class="apropos-row">
+        @if (aproposVideo(); as v) { <video [src]="v" muted playsinline controls preload="metadata"></video> }
+        @else { <div class="apropos-vide"><i class="fas fa-video"></i><span>Pas de vidéo : les 2 images actuelles sont affichées.</span></div> }
+        <div class="apropos-actions">
+          <label class="btn btn-primary" [class.disabled]="aproposEnvoi() !== null">
+            @if (aproposEnvoi() !== null) { <i class="fas fa-spinner fa-spin"></i> Envoi : {{ aproposEnvoi() }} % }
+            @else { <i class="fas fa-upload"></i> {{ aproposVideo() ? 'Remplacer la vidéo' : 'Ajouter une vidéo' }} }
+            <input type="file" accept="video/mp4,video/quicktime,video/webm" hidden (change)="choisirApropos($event)" [disabled]="aproposEnvoi() !== null">
+          </label>
+          @if (aproposVideo()) {
+            <button class="btn btn-ghost" type="button" (click)="retirerApropos()"><i class="fas fa-trash"></i> Retirer</button>
+          }
+          <small>MP4 ou MOV, 60 Mo max. Format vertical ou carré idéal.</small>
+        </div>
+      </div>
+    </section>
 
     @if (edit(); as e) {
       <div class="adm-overlay" (click)="fermer()">
@@ -96,6 +116,16 @@ const VIDE = (): SlideInput => ({ titre: '', accent: '', texte: '', ordre: 0, ac
     .car-prev { width: 84px; height: 64px; border-radius: 10px; object-fit: cover; background: #000; }
     .car-progress { margin-right: auto; font-size: .85rem; color: var(--teal-dark); font-weight: 600; }
     .adm-pill i { margin-right: .2rem; }
+    .apropos { margin-top: 2rem; display: grid; gap: .7rem; }
+    .apropos h2 { font-size: 1.15rem; }
+    .apropos > p { color: var(--muted); font-size: .9rem; }
+    .apropos-row { display: flex; gap: 1.2rem; align-items: flex-start; flex-wrap: wrap; }
+    .apropos-row video, .apropos-vide { width: 220px; aspect-ratio: 4 / 5; border-radius: 14px; background: #0b2f32; object-fit: cover; }
+    .apropos-vide { display: grid; place-content: center; gap: .5rem; text-align: center; color: var(--muted); background: var(--teal-mist); padding: 1rem; font-size: .85rem; }
+    .apropos-vide i { font-size: 1.8rem; color: var(--teal); }
+    .apropos-actions { display: grid; gap: .6rem; justify-items: start; }
+    .apropos-actions small { color: var(--muted); }
+    .btn.disabled { opacity: .7; pointer-events: none; }
   `,
 })
 export class AdminCarrousel {
@@ -110,9 +140,43 @@ export class AdminCarrousel {
   saving = signal(false);
   fichier: File | null = null;
 
-  constructor() { this.charger(); }
+  aproposVideo = signal<string | null>(null);
+  aproposEnvoi = signal<number | null>(null);
+
+  constructor() {
+    this.charger();
+    this.api.reglages().subscribe((r) => this.aproposVideo.set(r.apropos_video));
+  }
 
   charger() { this.api.adminSlides().subscribe((s) => this.slides.set(s)); }
+
+  choisirApropos(ev: Event) {
+    const input = ev.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    if (file.size > 60 * 1024 * 1024) {
+      this.ui.notify('Vidéo trop lourde (60 Mo max). Compressez-la avant de l’envoyer.', true);
+      return;
+    }
+    this.aproposEnvoi.set(0);
+    this.api.aproposVideo(file).subscribe({
+      next: (ev) => {
+        if (ev.type === HttpEventType.UploadProgress && ev.total) this.aproposEnvoi.set(Math.round((100 * ev.loaded) / ev.total));
+        if (ev.type === HttpEventType.Response) {
+          this.aproposVideo.set(ev.body?.apropos_video ?? null);
+          this.aproposEnvoi.set(null);
+          this.ui.notify('Vidéo « Qui sommes-nous » en ligne.');
+        }
+      },
+      error: (err) => { this.ui.notify(errorMessage(err), true); this.aproposEnvoi.set(null); },
+    });
+  }
+
+  retirerApropos() {
+    if (!confirm('Retirer la vidéo du bloc « Qui sommes-nous » ?')) return;
+    this.api.deleteAproposVideo().subscribe(() => { this.aproposVideo.set(null); this.ui.notify('Vidéo retirée.'); });
+  }
 
   ouvrir(s?: Slide) {
     this.liberer();

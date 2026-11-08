@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import {
-  Article, ArticleCard, ArticleInput, ArticlePage, Avis, AvisInput, ContactMessage, Evenement, Slide, SlideInput, Statistiques, EvenementInput, Hotel, HotelInput, Photo, Service,
+  Article, ArticleCard, ArticleInput, ArticlePage, Avis, AvisInput, ContactMessage, Evenement, Reglages, Slide, SlideInput, Statistiques, EvenementInput, Hotel, HotelInput, Photo, Service,
   ServiceInput, Stats,
 } from './models';
 
@@ -14,6 +14,7 @@ export class ApiService {
 
   // ── Public ─────────────────────────────────────────
   services() { return this.http.get<Service[]>(`${API}/services`); }
+  reglages() { return this.http.get<Reglages>(`${API}/reglages`); }
   slides() { return this.http.get<Slide[]>(`${API}/slides`); }
   evenements() { return this.http.get<Evenement[]>(`${API}/evenements`); }
   avis() { return this.http.get<Avis[]>(`${API}/avis`); }
@@ -53,6 +54,14 @@ export class ApiService {
       : this.http.post<Hotel>(`${ADMIN}/hotels`, data);
   }
   hotelImage(id: number, file: File) { return this.http.post<Hotel>(`${ADMIN}/hotels/${id}/image`, form(file)); }
+  hotelVideo(id: number, file: File) {
+    return this.http.post<Hotel>(`${ADMIN}/hotels/${id}/video`, champ('video', file), { reportProgress: true, observe: 'events' });
+  }
+  deleteHotelVideo(id: number) { return this.http.delete<Hotel>(`${ADMIN}/hotels/${id}/video`); }
+  aproposVideo(file: File) {
+    return this.http.post<Reglages>(`${ADMIN}/apropos/video`, champ('video', file), { reportProgress: true, observe: 'events' });
+  }
+  deleteAproposVideo() { return this.http.delete<Reglages>(`${ADMIN}/apropos/video`); }
   deleteHotel(id: number) { return this.http.delete(`${ADMIN}/hotels/${id}`); }
 
   adminServices() { return this.http.get<Service[]>(`${ADMIN}/services`); }
@@ -126,6 +135,12 @@ export class ApiService {
   }
   markAllRead() { return this.http.post(`${ADMIN}/contacts/tout-lu`, null); }
   deleteContact(id: number) { return this.http.delete(`${ADMIN}/contacts/${id}`); }
+}
+
+function champ(nom: string, file: File) {
+  const f = new FormData();
+  f.append(nom, file);
+  return f;
 }
 
 function form(file: File) {

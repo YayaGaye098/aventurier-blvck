@@ -261,3 +261,51 @@ def test_carrousel_accueil():
     assert [s["titre"] for s in client.get("/api/slides").json()] == ["Lac Rose"]
     assert client.post("/api/admin/slides", json={"titre": "x"}).status_code == 401
     assert client.delete(f"/api/admin/slides/{s2['id']}", headers=h).status_code == 200
+
+
+MP4 = b"\x00\x00\x00\x18ftypisom" + b"\x00" * 1024
+
+
+def test_videos_galerie_hotel_apropos():
+    h = token()
+    # galerie : une vidéo est reconnue comme telle
+    v = client.post("/api/admin/galerie", headers=h, files={"image": ("v.mp4", MP4, "video/mp4")}).json()
+    assert v["media_type"] == "video" and v["image"].endswith(".mp4")
+    p = client.post("/api/admin/galerie", headers=h, files={"image": ("p.png", png(), "image/png")}).json()
+    assert p["media_type"] == "image"
+    types = {x["id"]: x["media_type"] for x in client.get("/api/galerie").json()}
+    assert types[v["id"]] == "video" and types[p["id"]] == "image"
+
+    # hôtel : vidéo ajoutée puis retirée
+    hotel = client.post("/api/admin/hotels", headers=h, json={"nom": "Lodge", "ville": "Saly"}).json()
+    r = client.post(f"/api/admin/hotels/{hotel['id']}/video", headers=h, files={"video": ("v.mp4", MP4, "video/mp4")})
+    assert r.json()["video"].startswith("/uploads/hotel_")
+    assert any(x["video"] for x in client.get("/api/hotels").json())
+    assert client.delete(f"/api/admin/hotels/{hotel['id']}/video", headers=h).json()["video"] is None
+
+    # bloc « Qui sommes-nous »
+    assert client.get("/api/reglages").json() == {"apropos_video": None}
+    r = client.post("/api/admin/apropos/video", headers=h, files={"video": ("v.mp4", MP4, "video/mp4")})
+    assert r.json()["apropos_video"].startswith("/uploads/apropos_")
+    assert client.get("/api/reglages").json()["apropos_video"] == r.json()["apropos_video"]
+    assert client.delete("/api/admin/apropos/video", headers=h).json() == {"apropos_video": None}
+    assert client.post("/api/admin/apropos/video", files={"video": ("v.mp4", MP4, "video/mp4")}).status_code == 401
+
+
+def test_migration_ancienne_base():
+    import tempfile
+
+    from sqlalchemy import create_engine, inspect, text
+
+    from app.migrations import mettre_a_jour
+
+    eng = create_engine(f"sqlite:///{tempfile.mkdtemp()}/vieille.db")
+    with eng.begin() as c:  # tables telles qu'elles étaient avant les vidéos
+        c.execute(text("CREATE TABLE galerie (id INTEGER PRIMARY KEY, image VARCHAR(255))"))
+        c.execute(text("CREATE TABLE hotels (id INTEGER PRIMARY KEY, nom VARCHAR(150))"))
+        c.execute(text("INSERT INTO galerie (image) VALUES ('/uploads/a.jpg')"))
+    mettre_a_jour(eng)
+    mettre_a_jour(eng)  # sans effet la 2e fois
+    assert "video" in {c["name"] for c in inspect(eng).get_columns("hotels")}
+    with eng.connect() as c:
+        assert c.execute(text("SELECT media_type FROM galerie")).scalar() == "image"

@@ -67,14 +67,21 @@ export interface Hotel {
   etoiles: number;
   prix_nuit: number | null;
   image: string | null;
+  video: string | null;
   actif: boolean;
   featured: boolean;
+}
+
+export interface Reglages {
+  apropos_video: string | null;
 }
 
 export interface Photo {
   id: number;
   titre: string | null;
+  /** Fichier photo ou vidéo, selon media_type. */
   image: string;
+  media_type: 'image' | 'video';
   categorie: string | null;
   actif: boolean;
   created_at: string | null;
@@ -136,7 +143,7 @@ export interface Stats {
 }
 
 export type ServiceInput = Omit<Service, 'id' | 'image'>;
-export type HotelInput = Omit<Hotel, 'id' | 'image'>;
+export type HotelInput = Omit<Hotel, 'id' | 'image' | 'video'>;
 export type AvisInput = Omit<Avis, 'id' | 'image' | 'created_at'>;
 export type SlideInput = Omit<Slide, 'id' | 'media' | 'media_type'>;
 export type EvenementInput = Omit<Evenement, 'id' | 'image' | 'video'>;

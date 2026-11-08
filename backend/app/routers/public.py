@@ -7,9 +7,9 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..notify import envoyer_whatsapp
-from ..models import Avis, Contact, Evenement, Slide, Statistique, Hotel, Photo, Service
+from ..models import Avis, Contact, Evenement, Reglage, Slide, Statistique, Hotel, Photo, Service
 from ..security import avis_limiter, client_ip, contact_limiter, track_limiter
-from ..schemas import SlideOut, AvisOut, AvisPublicIn, ContactIn, TrackIn, EvenementOut, HotelOut, PhotoOut, ServiceOut
+from ..schemas import ReglagesOut, SlideOut, AvisOut, AvisPublicIn, ContactIn, TrackIn, EvenementOut, HotelOut, PhotoOut, ServiceOut
 
 router = APIRouter(prefix="/api", tags=["public"])
 
@@ -17,6 +17,11 @@ router = APIRouter(prefix="/api", tags=["public"])
 @router.get("/services", response_model=list[ServiceOut])
 def list_services(db: Session = Depends(get_db)):
     return db.scalars(select(Service).where(Service.actif).order_by(Service.id.desc())).all()
+
+
+@router.get("/reglages", response_model=ReglagesOut)
+def reglages(db: Session = Depends(get_db)):
+    return ReglagesOut(**{r.cle: r.valeur for r in db.scalars(select(Reglage)) if r.cle in ReglagesOut.model_fields})
 
 
 @router.get("/slides", response_model=list[SlideOut])

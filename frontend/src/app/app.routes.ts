@@ -13,7 +13,7 @@ export const routes: Routes = [
     children: [
       { path: '', loadComponent: () => import('./admin/dashboard').then((m) => m.Dashboard), title: 'Tableau de bord' },
       { path: 'hotels', loadComponent: () => import('./admin/hotels').then((m) => m.AdminHotels), title: 'Hôtels' },
-      { path: 'carrousel', loadComponent: () => import('./admin/carrousel').then((m) => m.AdminCarrousel), title: 'Carrousel de l’accueil' },
+      { path: 'carrousel', loadComponent: () => import('./admin/carrousel').then((m) => m.AdminCarrousel), title: 'Page d’accueil' },
       { path: 'evenements', loadComponent: () => import('./admin/evenements').then((m) => m.AdminEvenements), title: 'Événements' },
       { path: 'avis', loadComponent: () => import('./admin/avis').then((m) => m.AdminAvis), title: 'Avis clients' },
       { path: 'aventures', loadComponent: () => import('./admin/services').then((m) => m.AdminServices), title: 'Aventures' },

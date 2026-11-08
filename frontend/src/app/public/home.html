@@ -215,7 +215,11 @@
       @for (h of hotelsFiltres(); track h.id) {
         <article class="hotel">
           <div class="hotel-media">
-            @if (h.image) {
+            @if (h.video) {
+              <video #hv [src]="h.video" [poster]="h.image || ''" muted loop playsinline preload="none"
+                     (mouseenter)="hv.play().catch(rien)" (mouseleave)="hv.pause()" [attr.aria-label]="'Vidéo de ' + h.nom"></video>
+              <button type="button" class="hotel-play" (click)="videoPlein.set(h.video)"><i class="fas fa-play"></i> Vidéo</button>
+            } @else if (h.image) {
               <img [src]="h.image" [alt]="h.nom" loading="lazy">
             } @else {
               <div class="hotel-ph"><i class="fas fa-hotel"></i></div>
@@ -265,8 +269,14 @@
     </div>
     <div class="gallery">
       @for (p of photos(); track p.id; let i = $index) {
-        <button type="button" class="g-item" (click)="lightbox.set(i)" [attr.aria-label]="'Agrandir la photo ' + (i + 1)">
-          <img [src]="p.image" [alt]="p.titre || 'Aventure'" loading="lazy">
+        <button type="button" class="g-item" [class.g-video]="p.media_type === 'video'" (click)="lightbox.set(i)"
+                [attr.aria-label]="(p.media_type === 'video' ? 'Lire la vidéo ' : 'Agrandir la photo ') + (i + 1)">
+          @if (p.media_type === 'video') {
+            <video [src]="p.image + '#t=0.5'" muted playsinline preload="metadata"></video>
+            <span class="g-play" aria-hidden="true"><i class="fas fa-play"></i></span>
+          } @else {
+            <img [src]="p.image" [alt]="p.titre || 'Aventure'" loading="lazy">
+          }
         </button>
       }
     </div>
@@ -277,8 +287,21 @@
   <div class="lightbox" role="dialog" aria-modal="true" (click)="lightbox.set(null)">
     <button type="button" class="lb-close" aria-label="Fermer"><i class="fas fa-xmark"></i></button>
     <button type="button" class="lb-nav lb-prev" aria-label="Précédente" (click)="$event.stopPropagation(); step(-1)"><i class="fas fa-chevron-left"></i></button>
-    <img [src]="photos()[lightbox()!].image" [alt]="photos()[lightbox()!].titre || 'Aventure'" (click)="$event.stopPropagation()">
+    @if (photos()[lightbox()!]; as p) {
+      @if (p.media_type === 'video') {
+        <video [src]="p.image" controls autoplay playsinline (click)="$event.stopPropagation()"></video>
+      } @else {
+        <img [src]="p.image" [alt]="p.titre || 'Aventure'" (click)="$event.stopPropagation()">
+      }
+    }
     <button type="button" class="lb-nav lb-next" aria-label="Suivante" (click)="$event.stopPropagation(); step(1)"><i class="fas fa-chevron-right"></i></button>
+  </div>
+}
+
+@if (videoPlein(); as v) {
+  <div class="lightbox" role="dialog" aria-modal="true" aria-label="Vidéo" (click)="videoPlein.set(null)">
+    <button type="button" class="lb-close" aria-label="Fermer"><i class="fas fa-xmark"></i></button>
+    <video [src]="v" controls autoplay playsinline (click)="$event.stopPropagation()"></video>
   </div>
 }
 
@@ -372,7 +395,16 @@
 <!-- ── À propos ────────────────────────────────────── -->
 <section id="apropos" class="section">
   <div class="container about">
-    <div class="about-photos">
+    <div class="about-photos" [class.has-video]="reglages().apropos_video">
+      @if (reglages().apropos_video; as v) {
+        <div class="about-video">
+          <video #av [src]="v" autoplay muted loop playsinline preload="metadata" aria-label="Vidéo de présentation d'Aventurier Blvck"></video>
+          <button type="button" class="event-sound" (click)="basculerSonApropos(av)"
+                  [attr.aria-label]="sonApropos() ? 'Couper le son' : 'Activer le son'">
+            <i class="fas" [class.fa-volume-high]="sonApropos()" [class.fa-volume-xmark]="!sonApropos()"></i>
+          </button>
+        </div>
+      }
       <img src="/images/about1.webp" alt="Nos destinations : Dakar, Sine-Saloum, Saint-Louis, Kédougou, Casamance" loading="lazy">
       <img src="/images/about2.webp" alt="Nos services : tourisme, sur mesure, groupes, hébergement, location de véhicule" loading="lazy">
     </div>

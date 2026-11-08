@@ -1,7 +1,8 @@
 import { DecimalPipe } from '@angular/common';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { concatMap, of } from 'rxjs';
+import { Observable, concatMap, filter, map, of, tap } from 'rxjs';
 import { ApiService, errorMessage } from '../core/api.service';
 import { Hotel, HotelInput, VILLES } from '../core/models';
 import { AdminUi, preview } from './ui';
@@ -68,6 +69,17 @@ const VIDE: HotelInput = {
                 <p><strong>Choisir une photo</strong><br>ou la glisser ici · JPG, PNG, WEBP · 5 Mo max</p>
                 <input type="file" accept="image/*" hidden (change)="choisir($event)">
               </label>
+              <label class="adm-drop">
+                @if (videoApercu()) { <video [src]="videoApercu()" muted playsinline class="h-vid"></video> }
+                @else { <div class="ph"><i class="fas fa-video"></i></div> }
+                <p><strong>{{ videoApercu() ? 'Changer la vidéo' : 'Ajouter une vidéo (facultatif)' }}</strong><br>
+                  @if (videoNom()) { {{ videoNom() }} } @else { Visite des chambres, piscine… MP4 ou MOV, 60 Mo max. }</p>
+                <input type="file" accept="video/mp4,video/quicktime,video/webm" hidden (change)="choisirVideo($event)">
+              </label>
+              @if (e.id && videoActuelle() && !videoFichier) {
+                <button class="btn btn-ghost btn-sm" type="button" style="justify-self:start" (click)="retirerVideo(e.id)"><i class="fas fa-trash"></i> Retirer la vidéo</button>
+              }
+              @if (progression() !== null) { <p class="h-prog">Envoi de la vidéo : {{ progression() }} %</p> }
               <div class="field"><label for="nom">Nom de l'hôtel *</label>
                 <input id="nom" name="nom" class="input" required [(ngModel)]="e.data.nom"></div>
               <div class="adm-grid2">
@@ -111,6 +123,10 @@ const VIDE: HotelInput = {
       </div>
     }
   `,
+  styles: `
+    .h-vid { width: 84px; height: 64px; border-radius: 10px; object-fit: cover; background: #000; }
+    .h-prog { font-size: .85rem; color: var(--teal-dark); font-weight: 600; }
+  `,
 })
 export class AdminHotels {
   private api = inject(ApiService);
@@ -130,6 +146,11 @@ export class AdminHotels {
   edit = signal<{ id?: number; data: HotelInput } | null>(null);
   fichier: File | null = null;
   apercu = signal<string | null>(null);
+  videoFichier: File | null = null;
+  videoApercu = signal<string | null>(null);
+  videoActuelle = signal<string | null>(null);
+  videoNom = signal<string | null>(null);
+  progression = signal<number | null>(null);
   over = signal(false);
   saving = signal(false);
 
@@ -140,12 +161,61 @@ export class AdminHotels {
   ouvrir(h?: Hotel) {
     this.fichier = null;
     this.apercu.set(h?.image ?? null);
+    this.libererVideo();
+    this.videoFichier = null;
+    this.videoNom.set(null);
+    this.progression.set(null);
+    this.videoActuelle.set(h?.video ?? null);
+    this.videoApercu.set(h?.video ?? null);
     const data: HotelInput = h ? { ...h } : { ...VIDE };
     if (h && !this.villes.includes(h.ville)) this.villes.push(h.ville);
     this.edit.set({ id: h?.id, data });
   }
 
-  fermer() { this.edit.set(null); }
+  fermer() {
+    if (this.saving()) return;
+    this.libererVideo();
+    this.edit.set(null);
+  }
+
+  choisirVideo(ev: Event) {
+    const file = (ev.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    if (file.size > 60 * 1024 * 1024) {
+      this.ui.notify('Vidéo trop lourde (60 Mo max). Compressez-la avant de l’envoyer.', true);
+      return;
+    }
+    this.libererVideo();
+    this.videoFichier = file;
+    this.videoNom.set(`${file.name} (${(file.size / 1024 / 1024).toFixed(1)} Mo)`);
+    this.videoApercu.set(URL.createObjectURL(file));
+  }
+
+  retirerVideo(id: number) {
+    if (!confirm('Retirer la vidéo de cet hôtel ?')) return;
+    this.api.deleteHotelVideo(id).subscribe(() => {
+      this.videoActuelle.set(null);
+      this.videoApercu.set(null);
+      this.ui.notify('Vidéo retirée.');
+      this.charger();
+    });
+  }
+
+  private envoyerVideo(id: number, file: File): Observable<Hotel> {
+    this.progression.set(0);
+    return this.api.hotelVideo(id, file).pipe(
+      tap((ev: HttpEvent<Hotel>) => {
+        if (ev.type === HttpEventType.UploadProgress && ev.total) this.progression.set(Math.round((100 * ev.loaded) / ev.total));
+      }),
+      filter((ev) => ev.type === HttpEventType.Response),
+      map((ev) => (ev as { body: Hotel }).body),
+    );
+  }
+
+  private libererVideo() {
+    const v = this.videoApercu();
+    if (v?.startsWith('blob:')) URL.revokeObjectURL(v);
+  }
 
   async choisir(ev: Event) {
     const file = (ev.target as HTMLInputElement).files?.[0];
@@ -166,19 +236,21 @@ export class AdminHotels {
     const data = { ...e.data, prix_nuit: e.data.prix_nuit || null };
     this.api.saveHotel(data, e.id).pipe(
       concatMap((h) => (this.fichier ? this.api.hotelImage(h.id, this.fichier) : of(h))),
+      concatMap((h) => (this.videoFichier ? this.envoyerVideo(h.id, this.videoFichier) : of(h))),
     ).subscribe({
       next: () => {
         this.ui.notify(e.id ? 'Hôtel mis à jour.' : 'Hôtel ajouté.');
         this.saving.set(false);
+        this.progression.set(null);
         this.fermer();
         this.charger();
       },
-      error: (err) => { this.ui.notify(errorMessage(err), true); this.saving.set(false); this.charger(); },
+      error: (err) => { this.ui.notify(errorMessage(err), true); this.saving.set(false); this.progression.set(null); this.charger(); },
     });
   }
 
   basculer(h: Hotel, champ: 'actif' | 'featured') {
-    const { id, image, ...data } = h;
+    const { id, image, video, ...data } = h;
     this.api.saveHotel({ ...data, [champ]: !h[champ] }, id).subscribe({
       next: () => this.charger(),
       error: (err) => this.ui.notify(errorMessage(err), true),

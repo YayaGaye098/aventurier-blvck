@@ -133,6 +133,11 @@ class HotelIn(BaseModel):
 class HotelOut(ORM, HotelIn):
     id: int
     image: str | None = None
+    video: str | None = None
+
+
+class ReglagesOut(BaseModel):
+    apropos_video: str | None = None
 
 
 # ── Galerie ────────────────────────────────────────────
@@ -140,6 +145,7 @@ class PhotoOut(ORM):
     id: int
     titre: str | None
     image: str
+    media_type: str = "image"
     categorie: str | None
     actif: bool
     created_at: datetime | None = None

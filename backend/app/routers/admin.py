@@ -9,10 +9,10 @@ from sqlalchemy.orm import Session
 from ..auth import create_token, current_admin, hash_password, verify_password
 from ..backup import creer_sauvegarde
 from ..database import get_db
-from ..models import Admin, Article, Avis, Contact, Evenement, Hotel, Photo, Service, Slide, Statistique
+from ..models import Admin, Article, Avis, Contact, Evenement, Hotel, Photo, Reglage, Service, Slide, Statistique
 from ..schemas import (
     TYPES_STAT, AvisIn, AvisOut, ContactOut, EvenementIn, EvenementOut, HotelIn, HotelOut, LoginIn, PasswordChange,
-    PhotoOut, PhotoUpdate, ServiceIn, ServiceOut, SlideIn, SlideOut, StatCible, StatJour, Statistiques, Stats, TokenOut,
+    PhotoOut, PhotoUpdate, ReglagesOut, ServiceIn, ServiceOut, SlideIn, SlideOut, StatCible, StatJour, Statistiques, Stats, TokenOut,
 )
 from ..security import client_ip, login_limiter
 from ..uploads import delete_image, save_image, save_video
@@ -99,10 +99,30 @@ async def hotel_image(id: int, image: UploadFile = File(...), db: Session = Depe
     return hotel
 
 
+@auth.post("/hotels/{id}/video", response_model=HotelOut)
+async def hotel_video(id: int, video: UploadFile = File(...), db: Session = Depends(get_db)):
+    hotel = get_or_404(db, Hotel, id)
+    url = await save_video(video, "hotel")
+    delete_image(hotel.video)
+    hotel.video = url
+    db.commit()
+    return hotel
+
+
+@auth.delete("/hotels/{id}/video", response_model=HotelOut)
+def hotel_video_delete(id: int, db: Session = Depends(get_db)):
+    hotel = get_or_404(db, Hotel, id)
+    delete_image(hotel.video)
+    hotel.video = None
+    db.commit()
+    return hotel
+
+
 @auth.delete("/hotels/{id}")
 def delete_hotel(id: int, db: Session = Depends(get_db)):
     hotel = get_or_404(db, Hotel, id)
     delete_image(hotel.image)
+    delete_image(hotel.video)
     db.delete(hotel)
     db.commit()
     return {"success": True}
@@ -187,6 +207,32 @@ def delete_avis(id: int, db: Session = Depends(get_db)):
     db.delete(avis)
     db.commit()
     return {"success": True}
+
+
+# ── Vidéo du bloc « Qui sommes-nous » ─────────────────
+def _reglages(db: Session) -> ReglagesOut:
+    return ReglagesOut(**{r.cle: r.valeur for r in db.scalars(select(Reglage)) if r.cle in ReglagesOut.model_fields})
+
+
+@auth.post("/apropos/video", response_model=ReglagesOut)
+async def apropos_video(video: UploadFile = File(...), db: Session = Depends(get_db)):
+    url = await save_video(video, "apropos")
+    r = db.get(Reglage, "apropos_video") or Reglage(cle="apropos_video")
+    delete_image(r.valeur)
+    r.valeur = url
+    db.merge(r)
+    db.commit()
+    return _reglages(db)
+
+
+@auth.delete("/apropos/video", response_model=ReglagesOut)
+def apropos_video_delete(db: Session = Depends(get_db)):
+    r = db.get(Reglage, "apropos_video")
+    if r:
+        delete_image(r.valeur)
+        db.delete(r)
+        db.commit()
+    return _reglages(db)
 
 
 # ── Carrousel de l'accueil ─────────────────────────────
@@ -354,7 +400,12 @@ async def add_photo(
     categorie: str | None = Form(None),
     db: Session = Depends(get_db),
 ):
-    photo = Photo(image=await save_image(image, "galerie"), titre=titre or None, categorie=categorie or None)
+    # Le champ s'appelle « image » mais accepte aussi une vidéo (MP4, MOV, WEBM).
+    if (image.content_type or "").startswith("video/"):
+        url, kind = await save_video(image, "galerie"), "video"
+    else:
+        url, kind = await save_image(image, "galerie"), "image"
+    photo = Photo(image=url, media_type=kind, titre=titre or None, categorie=categorie or None)
     db.add(photo)
     db.commit()
     return photo

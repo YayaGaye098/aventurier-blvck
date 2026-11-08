@@ -97,6 +97,7 @@ class Hotel(Base):
     etoiles: Mapped[int] = mapped_column(Integer, default=3)
     prix_nuit: Mapped[int | None] = mapped_column(Integer, nullable=True)
     image: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    video: Mapped[str | None] = mapped_column(String(255), nullable=True)
     actif: Mapped[bool] = mapped_column(Boolean, default=True)
     featured: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
@@ -107,7 +108,8 @@ class Photo(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     titre: Mapped[str | None] = mapped_column(String(150), nullable=True)
-    image: Mapped[str] = mapped_column(String(255))
+    image: Mapped[str] = mapped_column(String(255))  # fichier photo OU vidéo (voir media_type)
+    media_type: Mapped[str] = mapped_column(String(10), default="image", server_default="image")
     categorie: Mapped[str | None] = mapped_column(String(80), nullable=True)
     actif: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
@@ -154,3 +156,12 @@ class Statistique(Base):
     type: Mapped[str] = mapped_column(String(30))
     cible: Mapped[str] = mapped_column(String(150), default="")
     total: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class Reglage(Base):
+    """Réglage simple du site (clé → valeur), ex. la vidéo du bloc « Qui sommes-nous »."""
+
+    __tablename__ = "reglages"
+
+    cle: Mapped[str] = mapped_column(String(60), primary_key=True)
+    valeur: Mapped[str | None] = mapped_column(String(255), nullable=True)

@@ -6,11 +6,12 @@ from fastapi.staticfiles import StaticFiles
 
 from .config import BASE_DIR, IS_PROD, settings
 from .database import Base, engine
-from . import seo
+from . import migrations, seo
 from .routers import admin, blog, public
 from .security import SecurityHeaders
 
 Base.metadata.create_all(bind=engine)
+migrations.mettre_a_jour(engine)
 
 app = FastAPI(
     title="Aventurier Blvck API",

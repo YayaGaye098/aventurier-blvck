@@ -19,7 +19,7 @@ import { AdminUi } from './ui';
         </a>
         <nav class="adm-nav" (click)="menu.set(false)">
           <a routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="fas fa-gauge"></i> Tableau de bord</a>
-          <a routerLink="/admin/carrousel" routerLinkActive="active"><i class="fas fa-photo-film"></i> Carrousel accueil</a>
+          <a routerLink="/admin/carrousel" routerLinkActive="active"><i class="fas fa-photo-film"></i> Page d’accueil</a>
           <a routerLink="/admin/evenements" routerLinkActive="active"><i class="fas fa-calendar-day"></i> Événements</a>
           <a routerLink="/admin/aventures" routerLinkActive="active"><i class="fas fa-compass"></i> Aventures</a>
           <a routerLink="/admin/hotels" routerLinkActive="active"><i class="fas fa-hotel"></i> Hôtels</a>
