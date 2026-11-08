@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import {
-  Article, ArticleCard, ArticleInput, ArticlePage, Avis, AvisInput, ContactMessage, Evenement, Statistiques, EvenementInput, Hotel, HotelInput, Photo, Service,
+  Article, ArticleCard, ArticleInput, ArticlePage, Avis, AvisInput, ContactMessage, Evenement, Slide, SlideInput, Statistiques, EvenementInput, Hotel, HotelInput, Photo, Service,
   ServiceInput, Stats,
 } from './models';
 
@@ -14,6 +14,7 @@ export class ApiService {
 
   // ── Public ─────────────────────────────────────────
   services() { return this.http.get<Service[]>(`${API}/services`); }
+  slides() { return this.http.get<Slide[]>(`${API}/slides`); }
   evenements() { return this.http.get<Evenement[]>(`${API}/evenements`); }
   avis() { return this.http.get<Avis[]>(`${API}/avis`); }
   envoyerAvis(data: { nom: string; origine: string; sortie: string; texte: string; note: number; website: string }) {
@@ -69,6 +70,17 @@ export class ApiService {
   }
   avisImage(id: number, file: File) { return this.http.post<Avis>(`${ADMIN}/avis/${id}/image`, form(file)); }
   deleteAvis(id: number) { return this.http.delete(`${ADMIN}/avis/${id}`); }
+
+  adminSlides() { return this.http.get<Slide[]>(`${ADMIN}/slides`); }
+  saveSlide(data: SlideInput, id?: number) {
+    return id ? this.http.put<Slide>(`${ADMIN}/slides/${id}`, data) : this.http.post<Slide>(`${ADMIN}/slides`, data);
+  }
+  slideMedia(id: number, file: File) {
+    const f = new FormData();
+    f.append('media', file);
+    return this.http.post<Slide>(`${ADMIN}/slides/${id}/media`, f, { reportProgress: true, observe: 'events' });
+  }
+  deleteSlide(id: number) { return this.http.delete(`${ADMIN}/slides/${id}`); }
 
   adminEvenements() { return this.http.get<Evenement[]>(`${ADMIN}/evenements`); }
   saveEvenement(data: EvenementInput, id?: number) {

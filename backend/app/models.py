@@ -32,6 +32,22 @@ class Service(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
 
+class Slide(Base):
+    """Diapo du carrousel de la page d'accueil : une photo ou une vidéo + un message."""
+
+    __tablename__ = "slides"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    media: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    media_type: Mapped[str] = mapped_column(String(10), default="image")  # "image" ou "video"
+    titre: Mapped[str] = mapped_column(String(120), default="")
+    accent: Mapped[str | None] = mapped_column(String(120), nullable=True)  # 2e ligne du titre, en couleur
+    texte: Mapped[str | None] = mapped_column(String(300), nullable=True)
+    ordre: Mapped[int] = mapped_column(Integer, default=0)
+    actif: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+
 class Evenement(Base):
     """Sortie datée (départ de groupe) mise en avant sur le site, avec photo et vidéo."""
 

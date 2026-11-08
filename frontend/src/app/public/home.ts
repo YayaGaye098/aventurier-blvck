@@ -1,13 +1,25 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, HostListener, computed, inject, signal } from '@angular/core';
+import { Component, HostListener, OnDestroy, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ApiService, errorMessage } from '../core/api.service';
 import { track, TrackType } from '../core/track';
-import { AGENCE, ArticleCard, Avis, Evenement, Hotel, Photo, Service } from '../core/models';
+import { AGENCE, ArticleCard, Avis, Evenement, Hotel, Photo, Service, Slide } from '../core/models';
 import { PostCard } from './post-card';
 import { SiteFooter } from './site-footer';
 import { SiteHeader } from './site-header';
+
+/** Durée d'affichage d'une photo du carrousel (les vidéos, elles, vont jusqu'au bout). */
+const DUREE_SLIDE_MS = 2000;
+/** Une vidéo trop longue passe quand même à la suite au bout de ce délai. */
+const DUREE_MAX_VIDEO_MS = 20000;
+
+/** Diapo affichée si aucune n'est encore configurée dans l'admin. */
+const SLIDE_PAR_DEFAUT: Slide = {
+  id: 0, media: '/images/back1.webp', media_type: 'image', ordre: 0, actif: true,
+  titre: 'Explorez le Sénégal', accent: 'autrement.',
+  texte: 'Des sorties à vélo entre les baobabs, des balades au bord du fleuve, des week-ends dans les plus beaux coins du pays, avec un guide passionné.',
+};
 
 const FALLBACK_PHOTOS = ['1.jpeg', '2.jpeg', '3.jpeg', '4.jpeg', '6.jpeg', '7.jpeg', '8.jpeg'];
 
@@ -17,11 +29,21 @@ const FALLBACK_PHOTOS = ['1.jpeg', '2.jpeg', '3.jpeg', '4.jpeg', '6.jpeg', '7.jp
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home {
+export class Home implements OnDestroy {
   private api = inject(ApiService);
   private route = inject(ActivatedRoute);
 
   readonly agence = AGENCE;
+
+  // ── Carrousel de l'accueil ──
+  readonly dureeSlide = DUREE_SLIDE_MS;
+  slides = signal<Slide[]>([SLIDE_PAR_DEFAUT]);
+  slideIndex = signal(0);
+  slideCourante = computed(() => [this.slides()[this.slideIndex()] ?? SLIDE_PAR_DEFAUT]);
+  /** Diapos dont la photo est déjà chargée (on ne charge que l'actuelle et la suivante). */
+  slidesChargees = signal(new Set<number>([0, 1]));
+  enPause = signal(false);
+  private slideTimer?: ReturnType<typeof setTimeout>;
 
   services = signal<Service[]>([]);
   evenements = signal<Evenement[]>([]);
@@ -55,6 +77,10 @@ export class Home {
   feedback = signal<{ ok: boolean; text: string } | null>(null);
 
   constructor() {
+    this.api.slides().subscribe({
+      next: (s) => { if (s.length) { this.slides.set(s); this.allerA(0); } },
+      error: () => {},
+    });
     let pending = 3;
     const done = () => { if (--pending === 0) this.loading.set(false); };
     this.api.avis().subscribe({ next: (a) => this.avis.set(a), error: () => {} });
@@ -75,6 +101,31 @@ export class Home {
       complete: done,
     });
     this.api.articles(1, 3).subscribe({ next: (p) => this.articles.set(p.items), error: () => {} });
+  }
+
+  ngOnDestroy() { clearTimeout(this.slideTimer); }
+
+  allerA(i: number) {
+    const n = this.slides().length;
+    i = ((i % n) + n) % n;
+    this.slideIndex.set(i);
+    this.slidesChargees.update((s) => new Set(s).add(i).add((i + 1) % n));
+    this.planifier();
+  }
+
+  suivant() { this.allerA(this.slideIndex() + 1); }
+
+  basculerPause() {
+    this.enPause.update((p) => !p);
+    this.planifier();
+  }
+
+  private planifier() {
+    clearTimeout(this.slideTimer);
+    if (this.enPause() || this.slides().length < 2) return;
+    const video = this.slides()[this.slideIndex()]?.media_type === 'video';
+    // Photo : 2 s. Vidéo : jusqu'à sa fin (événement « ended »), avec un délai de secours.
+    this.slideTimer = setTimeout(() => this.suivant(), video ? DUREE_MAX_VIDEO_MS : DUREE_SLIDE_MS);
   }
 
   @HostListener('document:keydown', ['$event'])

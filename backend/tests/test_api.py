@@ -239,3 +239,25 @@ def test_sauvegarde_zip():
     noms = zipfile.ZipFile(BytesIO(r.content)).namelist()
     assert "aventurier.db" in noms and "RESTAURER.txt" in noms
     assert client.get("/api/admin/sauvegarde").status_code == 401
+
+
+def test_carrousel_accueil():
+    h = token()
+    s1 = client.post("/api/admin/slides", headers=h, json={"titre": "Cap sur le", "accent": "Sine Saloum"}).json()
+    s2 = client.post("/api/admin/slides", headers=h, json={"titre": "Lac Rose"}).json()
+    assert s2["ordre"] == s1["ordre"] + 1  # ajoutée à la fin
+    # sans photo/vidéo, une diapo n'est pas affichée sur le site
+    assert client.get("/api/slides").json() == []
+    r = client.post(f"/api/admin/slides/{s1['id']}/media", headers=h, files={"media": ("p.png", png(), "image/png")})
+    assert r.json()["media_type"] == "image" and r.json()["media"].startswith("/uploads/slide_")
+    mp4 = b"\x00\x00\x00\x18ftypisom" + b"\x00" * 1024
+    r = client.post(f"/api/admin/slides/{s2['id']}/media", headers=h, files={"media": ("v.mp4", mp4, "video/mp4")})
+    assert r.json()["media_type"] == "video"
+    assert [s["titre"] for s in client.get("/api/slides").json()] == ["Cap sur le", "Lac Rose"]
+    # réordonner puis masquer
+    client.put(f"/api/admin/slides/{s2['id']}", headers=h, json={"titre": "Lac Rose", "ordre": 0})
+    assert client.get("/api/slides").json()[0]["titre"] == "Lac Rose"
+    client.put(f"/api/admin/slides/{s1['id']}", headers=h, json={"titre": "Cap sur le", "ordre": 5, "actif": False})
+    assert [s["titre"] for s in client.get("/api/slides").json()] == ["Lac Rose"]
+    assert client.post("/api/admin/slides", json={"titre": "x"}).status_code == 401
+    assert client.delete(f"/api/admin/slides/{s2['id']}", headers=h).status_code == 200

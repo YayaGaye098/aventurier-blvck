@@ -22,6 +22,21 @@ class ServiceOut(ORM, ServiceIn):
     image: str | None = None
 
 
+# ── Carrousel de l'accueil ─────────────────────────────
+class SlideIn(BaseModel):
+    titre: str = Field(default="", max_length=120)
+    accent: str | None = Field(default=None, max_length=120)
+    texte: str | None = Field(default=None, max_length=300)
+    ordre: int = 0
+    actif: bool = True
+
+
+class SlideOut(ORM, SlideIn):
+    id: int
+    media: str | None = None
+    media_type: str = "image"
+
+
 # ── Événements (sorties datées) ───────────────────────
 class EvenementIn(BaseModel):
     titre: str = Field(min_length=1, max_length=150)

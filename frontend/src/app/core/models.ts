@@ -9,6 +9,17 @@ export interface Service {
   actif: boolean;
 }
 
+export interface Slide {
+  id: number;
+  media: string | null;
+  media_type: 'image' | 'video';
+  titre: string;
+  accent: string | null;
+  texte: string | null;
+  ordre: number;
+  actif: boolean;
+}
+
 export interface Evenement {
   id: number;
   titre: string;
@@ -127,6 +138,7 @@ export interface Stats {
 export type ServiceInput = Omit<Service, 'id' | 'image'>;
 export type HotelInput = Omit<Hotel, 'id' | 'image'>;
 export type AvisInput = Omit<Avis, 'id' | 'image' | 'created_at'>;
+export type SlideInput = Omit<Slide, 'id' | 'media' | 'media_type'>;
 export type EvenementInput = Omit<Evenement, 'id' | 'image' | 'video'>;
 
 export const VILLES = [

@@ -12,7 +12,7 @@ from app.auth import hash_password
 from app.database import Base, SessionLocal, engine
 from datetime import datetime, timedelta
 
-from app.models import Admin, Article, Hotel, Photo, Service
+from app.models import Admin, Article, Hotel, Photo, Service, Slide
 
 DEMO_SERVICES = [
     ("Balade au Lac Rose", "Découverte du lac, des récolteurs de sel et des dunes voisines.", "fa-water", "Demi-journée", "/uploads/aventure_lac-rose.jpeg"),
@@ -21,6 +21,21 @@ DEMO_SERVICES = [
     ("Week-end en Casamance", "Forêts, villages et plages du sud, avec hébergement chez nos partenaires.", "fa-tree", "2 à 3 jours", "/uploads/aventure_casamance.jpeg"),
     ("Coucher de soleil à Saly", "Fin de journée en bord de mer, photos et détente.", "fa-sun", "2 heures", "/uploads/aventure_coucher-soleil.jpeg"),
     ("Excursion sur mesure", "Dites-nous ce qui vous fait rêver : on construit l'aventure ensemble.", "fa-compass", None, "/uploads/aventure_sur-mesure.jpeg"),
+]
+
+DEMO_SLIDES = [
+    ("hero_velo.jpg", "Explorez le Sénégal", "autrement.",
+     "Des sorties à vélo entre les baobabs, avec un guide passionné."),
+    ("hero_saloum.jpg", "Cap sur le", "Sine Saloum",
+     "Mangroves, balade en pirogue et îles secrètes : une journée hors du temps."),
+    ("hero_lac-rose.jpg", "Des paysages", "qui en mettent plein les yeux.",
+     "Lac Rose, salines colorées, dunes : le Sénégal comme vous ne l'avez jamais vu."),
+    ("hero_coucher-soleil.jpg", "Des couchers de soleil", "inoubliables.",
+     "Fin de journée les pieds dans l'eau, entre baobabs et lumière dorée."),
+    ("hero_groupe.jpg", "Partez seul,", "revenez entre amis.",
+     "Nos sorties de groupe : bonne humeur, rencontres et souvenirs garantis."),
+    ("hero_casamance.jpg", "Au cœur des", "baobabs géants.",
+     "Villages, nature et traditions : des week-ends authentiques partout au pays."),
 ]
 
 DEMO_HOTELS = [
@@ -113,6 +128,8 @@ def main():
         if args.demo and not db.scalar(select(Service.id).limit(1)):
             for titre, desc, icone, duree, image in reversed(DEMO_SERVICES):
                 db.add(Service(titre=titre, description=desc, icone=icone, duree=duree, image=image))
+            for i, (fichier, titre, accent, texte) in enumerate(DEMO_SLIDES, start=1):
+                db.add(Slide(media=f"/uploads/{fichier}", titre=titre, accent=accent, texte=texte, ordre=i))
             for nom, ville, etoiles, image, featured in DEMO_HOTELS:
                 db.add(Hotel(
                     nom=nom, ville=ville, etoiles=etoiles, image=image, featured=featured,

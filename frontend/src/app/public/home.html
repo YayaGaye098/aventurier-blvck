@@ -1,8 +1,21 @@
 <app-site-header [overlay]="true" />
 
 <!-- ── Accueil ─────────────────────────────────────── -->
-<section id="accueil" class="hero">
-  <div class="hero-bg" aria-hidden="true"></div>
+<section id="accueil" class="hero" aria-roledescription="carrousel" aria-label="Nos aventures en images">
+  <div class="hero-slides" aria-hidden="true">
+    @for (s of slides(); track s.id; let i = $index) {
+      <div class="hero-slide" [class.on]="i === slideIndex()">
+        @if (s.media_type === 'video') {
+          @if (i === slideIndex()) {
+            <video [src]="s.media" autoplay muted playsinline (ended)="suivant()" (error)="suivant()"></video>
+          }
+        } @else if (slidesChargees().has(i)) {
+          <img [src]="s.media" alt="" [attr.fetchpriority]="i === 0 ? 'high' : null">
+        }
+      </div>
+    }
+    <div class="hero-shade"></div>
+  </div>
   <div class="container hero-inner">
     @if (prochain(); as ev) {
       <a href="#departs" class="hero-next">
@@ -13,8 +26,12 @@
     } @else {
       <p class="eyebrow"><i class="fas fa-location-dot"></i> Sénégal · Balades · Excursions · Séjours</p>
     }
-    <h1>Explorez le Sénégal<br><span>autrement.</span></h1>
-    <p class="lead">Des sorties à vélo entre les baobabs, des balades au bord du fleuve, des week-ends dans les plus beaux coins du pays, avec un guide passionné et des hôtels partenaires choisis avec soin.</p>
+    @for (s of slideCourante(); track s.id) {
+      <div class="hero-msg" aria-live="polite">
+        <h1>{{ s.titre }}@if (s.accent) {<br><span>{{ s.accent }}</span>}</h1>
+        @if (s.texte) { <p class="lead">{{ s.texte }}</p> }
+      </div>
+    }
     <div class="hero-cta">
       <a href="#aventures" class="btn btn-sun"><i class="fas fa-compass"></i> Voir les aventures</a>
       <a href="#hotels" class="btn btn-light"><i class="fas fa-bed"></i> Nos hôtels partenaires</a>
@@ -25,6 +42,20 @@
       <li><strong>Partenaires</strong><span>hôtels et lodges vérifiés</span></li>
     </ul>
   </div>
+
+  @if (slides().length > 1) {
+    <div class="hero-dots" [class.paused]="enPause()" [style.--duree]="dureeSlide + 'ms'">
+      <button type="button" class="hero-pause" (click)="basculerPause()"
+              [attr.aria-label]="enPause() ? 'Relancer le défilement' : 'Mettre le défilement en pause'">
+        <i class="fas" [class.fa-pause]="!enPause()" [class.fa-play]="enPause()"></i>
+      </button>
+      @for (s of slides(); track s.id; let i = $index) {
+        <button type="button" class="hero-dot" [class.on]="i === slideIndex()" [class.video]="s.media_type === 'video'"
+                (click)="allerA(i)" [attr.aria-label]="'Diapo ' + (i + 1) + ' : ' + s.titre + ' ' + (s.accent || '')"
+                [attr.aria-current]="i === slideIndex() ? 'true' : null"><i></i></button>
+      }
+    </div>
+  }
 </section>
 
 <!-- ── Prochains départs (événements datés) ───────── -->

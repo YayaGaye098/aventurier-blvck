@@ -9,10 +9,10 @@ from sqlalchemy.orm import Session
 from ..auth import create_token, current_admin, hash_password, verify_password
 from ..backup import creer_sauvegarde
 from ..database import get_db
-from ..models import Admin, Article, Avis, Contact, Evenement, Hotel, Photo, Service, Statistique
+from ..models import Admin, Article, Avis, Contact, Evenement, Hotel, Photo, Service, Slide, Statistique
 from ..schemas import (
     TYPES_STAT, AvisIn, AvisOut, ContactOut, EvenementIn, EvenementOut, HotelIn, HotelOut, LoginIn, PasswordChange,
-    PhotoOut, PhotoUpdate, ServiceIn, ServiceOut, StatCible, StatJour, Statistiques, Stats, TokenOut,
+    PhotoOut, PhotoUpdate, ServiceIn, ServiceOut, SlideIn, SlideOut, StatCible, StatJour, Statistiques, Stats, TokenOut,
 )
 from ..security import client_ip, login_limiter
 from ..uploads import delete_image, save_image, save_video
@@ -185,6 +185,54 @@ def delete_avis(id: int, db: Session = Depends(get_db)):
     avis = get_or_404(db, Avis, id)
     delete_image(avis.image)
     db.delete(avis)
+    db.commit()
+    return {"success": True}
+
+
+# ── Carrousel de l'accueil ─────────────────────────────
+@auth.get("/slides", response_model=list[SlideOut])
+def admin_slides(db: Session = Depends(get_db)):
+    return db.scalars(select(Slide).order_by(Slide.ordre, Slide.id)).all()
+
+
+@auth.post("/slides", response_model=SlideOut)
+def create_slide(data: SlideIn, db: Session = Depends(get_db)):
+    slide = Slide(**data.model_dump())
+    if not data.ordre:  # nouvelle diapo : à la fin
+        slide.ordre = (db.scalar(select(func.max(Slide.ordre))) or 0) + 1
+    db.add(slide)
+    db.commit()
+    return slide
+
+
+@auth.put("/slides/{id}", response_model=SlideOut)
+def update_slide(id: int, data: SlideIn, db: Session = Depends(get_db)):
+    slide = get_or_404(db, Slide, id)
+    for k, v in data.model_dump().items():
+        setattr(slide, k, v)
+    db.commit()
+    return slide
+
+
+@auth.post("/slides/{id}/media", response_model=SlideOut)
+async def slide_media(id: int, media: UploadFile = File(...), db: Session = Depends(get_db)):
+    """Photo ou vidéo de la diapo (le type est détecté d'après le fichier)."""
+    slide = get_or_404(db, Slide, id)
+    if (media.content_type or "").startswith("video/"):
+        url, kind = await save_video(media, "slide"), "video"
+    else:
+        url, kind = await save_image(media, "slide"), "image"
+    delete_image(slide.media)
+    slide.media, slide.media_type = url, kind
+    db.commit()
+    return slide
+
+
+@auth.delete("/slides/{id}")
+def delete_slide(id: int, db: Session = Depends(get_db)):
+    slide = get_or_404(db, Slide, id)
+    delete_image(slide.media)
+    db.delete(slide)
     db.commit()
     return {"success": True}
 
