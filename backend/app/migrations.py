@@ -11,6 +11,7 @@ from sqlalchemy.engine import Engine
 COLONNES = [
     ("galerie", "media_type", "VARCHAR(10) NOT NULL DEFAULT 'image'"),
     ("hotels", "video", "VARCHAR(255)"),
+    ("articles", "liens", "TEXT NOT NULL DEFAULT ''"),
 ]
 
 

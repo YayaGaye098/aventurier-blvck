@@ -109,10 +109,26 @@ export interface ArticleCard {
   temps_lecture: number;
 }
 
+export interface ArticleMedia {
+  id: number;
+  fichier: string;
+  media_type: 'image' | 'video';
+}
+
+/** Vidéo TikTok ou publication Instagram intégrée dans un article. */
+export interface Embed {
+  plateforme: 'tiktok' | 'instagram';
+  /** TikTok : numéro de la vidéo. Instagram : « p/CODE » ou « reel/CODE ». */
+  id: string;
+  url: string;
+}
+
 export interface Article extends ArticleCard {
   contenu: string;
   created_at: string | null;
   updated_at: string | null;
+  medias: ArticleMedia[];
+  embeds: Embed[];
 }
 
 export interface ArticlePage {
@@ -129,6 +145,7 @@ export interface ArticleInput {
   contenu: string;
   categorie: string | null;
   publie: boolean;
+  embeds: string[];
 }
 
 export interface Stats {

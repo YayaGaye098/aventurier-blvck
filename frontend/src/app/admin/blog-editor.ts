@@ -1,13 +1,14 @@
+import { HttpEventType } from '@angular/common/http';
 import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { marked } from 'marked';
 import { concatMap, of } from 'rxjs';
 import { ApiService, errorMessage } from '../core/api.service';
-import { ArticleInput } from '../core/models';
+import { ArticleInput, ArticleMedia } from '../core/models';
 import { AdminUi, preview } from './ui';
 
-const VIDE: ArticleInput = { titre: '', slug: '', extrait: '', contenu: '', categorie: '', publie: false };
+const VIDE: ArticleInput = { titre: '', slug: '', extrait: '', contenu: '', categorie: '', publie: false, embeds: [] };
 
 @Component({
   selector: 'app-blog-editor',
@@ -75,6 +76,30 @@ const VIDE: ArticleInput = { titre: '', slug: '', extrait: '', contenu: '', cate
           </label>
           @if (apercu()) { <p class="hint">Cliquez sur l'image pour la changer.</p> }
         </div>
+        <div class="adm-card">
+          <h2>Photos & vidéos de l'article</h2>
+          @if (id()) {
+            <label class="m-drop" [class.busy]="envoiMedia() !== null">
+              @if (envoiMedia() !== null) { <i class="fas fa-spinner fa-spin"></i> Envoi… {{ envoiMedia() }} % }
+              @else { <i class="fas fa-plus"></i> Ajouter des photos ou vidéos }
+              <input type="file" accept="image/*,video/mp4,video/quicktime,video/webm" multiple hidden (change)="ajouterMedias($event)">
+            </label>
+            @if (medias().length) {
+              <div class="m-grid">
+                @for (m of medias(); track m.id) {
+                  <div class="m-item">
+                    @if (m.media_type === 'video') { <video [src]="m.fichier + '#t=0.5'" muted preload="metadata"></video><i class="fas fa-play m-play"></i> }
+                    @else { <img [src]="m.fichier" alt=""> }
+                    <button type="button" (click)="retirerMedia(m.id)" aria-label="Retirer"><i class="fas fa-xmark"></i></button>
+                  </div>
+                }
+              </div>
+            }
+            <p class="hint">Affichées en galerie sous le texte de l'article. Photo 5 Mo, vidéo 60 Mo max.</p>
+          } @else {
+            <p class="hint">Enregistrez d'abord l'article (brouillon) pour pouvoir ajouter ses photos et vidéos.</p>
+          }
+        </div>
         <div class="adm-card fields">
           <h2>Réglages</h2>
           <div class="field">
@@ -86,6 +111,12 @@ const VIDE: ArticleInput = { titre: '', slug: '', extrait: '', contenu: '', cate
             <label for="slug">Adresse de l'article</label>
             <input id="slug" class="input" [(ngModel)]="data.slug" placeholder="générée depuis le titre">
             <span class="hint">/blog/{{ data.slug || 'titre-de-l-article' }}</span>
+          </div>
+          <div class="field">
+            <label for="embeds">Vidéos TikTok / Instagram</label>
+            <textarea id="embeds" class="input" rows="4" [(ngModel)]="embedsTexte"
+                      placeholder="Un lien par ligne, ex. :&#10;https://www.tiktok.com/@aventurierblvck/video/…&#10;https://www.instagram.com/reel/…"></textarea>
+            <span class="hint">Sur TikTok ou Instagram : Partager → Copier le lien, puis collez-le ici. La vidéo s'affiche dans l'article.</span>
           </div>
           <p class="status">Statut :
             @if (data.publie) { <span class="adm-pill">Publié</span> } @else { <span class="adm-pill off">Brouillon</span> }
@@ -126,6 +157,17 @@ const VIDE: ArticleInput = { titre: '', slug: '', extrait: '', contenu: '', cate
     .cover:hover .ph { border-color: var(--teal); background: var(--teal-mist); }
     .hint { color: var(--muted); font-size: .78rem; font-weight: 400; }
     .status { font-size: .9rem; }
+    .m-drop { display: flex; align-items: center; justify-content: center; gap: .5rem; padding: .8rem; border: 2px dashed var(--line); border-radius: 12px;
+      color: var(--teal); font-weight: 600; font-size: .9rem; cursor: pointer; }
+    .m-drop:hover { border-color: var(--teal); background: var(--teal-mist); }
+    .m-drop.busy { pointer-events: none; opacity: .8; }
+    .m-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; margin: .7rem 0 .4rem; }
+    .m-item { position: relative; aspect-ratio: 1; border-radius: 8px; overflow: hidden; background: #0b2f32; }
+    .m-item img, .m-item video { width: 100%; height: 100%; object-fit: cover; }
+    .m-play { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; pointer-events: none; }
+    .m-item button { position: absolute; top: 3px; right: 3px; width: 22px; height: 22px; border: 0; border-radius: 50%; cursor: pointer;
+      background: rgba(0,0,0,.65); color: #fff; font-size: .7rem; display: grid; place-items: center; }
+    .m-item button:hover { background: var(--danger); }
     @media (max-width: 1000px) { .layout { grid-template-columns: 1fr; } .side { position: static; } }
   `,
 })
@@ -145,6 +187,9 @@ export class BlogEditor {
   categories = signal<string[]>([]);
   couverture: File | null = null;
   saving = signal(false);
+  embedsTexte = '';
+  medias = signal<ArticleMedia[]>([]);
+  envoiMedia = signal<number | null>(null);
   envoiImage = signal(false);
 
   constructor() {
@@ -156,7 +201,9 @@ export class BlogEditor {
       this.api.adminArticle(id).subscribe({
         next: (a) => {
           this.id.set(a.id);
-          this.data = { titre: a.titre, slug: a.slug, extrait: a.extrait, contenu: a.contenu, categorie: a.categorie ?? '', publie: a.publie };
+          this.data = { titre: a.titre, slug: a.slug, extrait: a.extrait, contenu: a.contenu, categorie: a.categorie ?? '', publie: a.publie, embeds: [] };
+          this.embedsTexte = a.embeds.map((e) => e.url).join('\n');
+          this.medias.set(a.medias);
           this.contenu.set(a.contenu);
           this.apercu.set(a.image);
           this.slugActuel.set(a.slug);
@@ -173,7 +220,8 @@ export class BlogEditor {
 
   enregistrer(publier: boolean) {
     // « Publier » publie ; le bouton secondaire enregistre en brouillon (ou dépublie).
-    const data: ArticleInput = { ...this.data, publie: publier, slug: this.data.slug || null, categorie: this.data.categorie || null };
+    const embeds = this.embedsTexte.split(/\s+/).map((l) => l.trim()).filter(Boolean);
+    const data: ArticleInput = { ...this.data, embeds, publie: publier, slug: this.data.slug || null, categorie: this.data.categorie || null };
     const etaitPublie = this.data.publie;
     this.saving.set(true);
     this.api.saveArticle(data, this.id() ?? undefined).pipe(
@@ -183,6 +231,7 @@ export class BlogEditor {
         this.couverture = null;
         this.saving.set(false);
         this.data = { ...this.data, slug: a.slug, publie: a.publie };
+        this.embedsTexte = a.embeds.map((e) => e.url).join('\n');  // liens remis au propre par le serveur
         this.slugActuel.set(a.slug);
         this.ui.notify(a.publie ? (etaitPublie ? 'Article mis à jour.' : 'Article publié !') : 'Brouillon enregistré.');
         if (!this.id()) {
@@ -246,6 +295,40 @@ export class BlogEditor {
         this.envoiImage.set(false);
       },
       error: (e) => { this.ui.notify(errorMessage(e), true); this.envoiImage.set(false); },
+    });
+  }
+
+  /** Envoie les fichiers un par un (photos et vidéos). */
+  ajouterMedias(ev: Event) {
+    const input = ev.target as HTMLInputElement;
+    const id = this.id();
+    let fichiers = [...(input.files ?? [])];
+    input.value = '';
+    if (!id || !fichiers.length) return;
+    const lourdes = fichiers.filter((f) => f.type.startsWith('video/') && f.size > 60 * 1024 * 1024);
+    if (lourdes.length) this.ui.notify(`${lourdes.length} vidéo(s) de plus de 60 Mo ignorée(s).`, true);
+    fichiers = fichiers.filter((f) => !lourdes.includes(f));
+    const suivant = () => {
+      const f = fichiers.shift();
+      if (!f) { this.envoiMedia.set(null); return; }
+      this.envoiMedia.set(0);
+      this.api.articleMedia(id, f).subscribe({
+        next: (e) => {
+          if (e.type === HttpEventType.UploadProgress && e.total) this.envoiMedia.set(Math.round((100 * e.loaded) / e.total));
+          if (e.type === HttpEventType.Response && e.body) { this.medias.set(e.body.medias); suivant(); }
+        },
+        error: (err) => { this.ui.notify(errorMessage(err), true); suivant(); },
+      });
+    };
+    suivant();
+  }
+
+  retirerMedia(mediaId: number) {
+    const id = this.id();
+    if (!id || !confirm('Retirer cette photo/vidéo de l’article ?')) return;
+    this.api.deleteArticleMedia(id, mediaId).subscribe({
+      next: (a) => this.medias.set(a.medias),
+      error: (err) => this.ui.notify(errorMessage(err), true),
     });
   }
 }

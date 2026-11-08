@@ -126,6 +126,10 @@ export class ApiService {
       : this.http.post<Article>(`${ADMIN}/blog`, data);
   }
   articleImage(id: number, file: File) { return this.http.post<Article>(`${ADMIN}/blog/${id}/image`, form(file)); }
+  articleMedia(id: number, file: File) {
+    return this.http.post<Article>(`${ADMIN}/blog/${id}/medias`, champ('media', file), { reportProgress: true, observe: 'events' });
+  }
+  deleteArticleMedia(id: number, mediaId: number) { return this.http.delete<Article>(`${ADMIN}/blog/${id}/medias/${mediaId}`); }
   uploadInline(file: File) { return this.http.post<{ url: string }>(`${ADMIN}/blog/upload`, form(file)); }
   deleteArticle(id: number) { return this.http.delete(`${ADMIN}/blog/${id}`); }
 

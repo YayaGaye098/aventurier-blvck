@@ -2,8 +2,8 @@ from datetime import datetime
 
 from datetime import date
 
-from sqlalchemy import Boolean, Date, DateTime, Integer, String, Text, UniqueConstraint, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
 
@@ -127,10 +127,30 @@ class Article(Base):
     contenu: Mapped[str] = mapped_column(Text, default="")
     image: Mapped[str | None] = mapped_column(String(255), nullable=True)
     categorie: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    # Liens TikTok / Instagram intégrés (un par ligne, déjà mis au propre)
+    liens: Mapped[str] = mapped_column(Text, default="", server_default="")
     publie: Mapped[bool] = mapped_column(Boolean, default=False)
     published_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    medias: Mapped[list["ArticleMedia"]] = relationship(
+        back_populates="article", cascade="all, delete-orphan", order_by="ArticleMedia.ordre, ArticleMedia.id")
+
+
+class ArticleMedia(Base):
+    """Photo ou vidéo d'illustration d'un article (galerie affichée sous le texte)."""
+
+    __tablename__ = "article_medias"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    article_id: Mapped[int] = mapped_column(ForeignKey("articles.id", ondelete="CASCADE"), index=True)
+    fichier: Mapped[str] = mapped_column(String(255))
+    media_type: Mapped[str] = mapped_column(String(10), default="image")
+    ordre: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+
+    article: Mapped[Article] = relationship(back_populates="medias")
 
 
 class Contact(Base):

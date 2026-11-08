@@ -165,6 +165,8 @@ class ArticleIn(BaseModel):
     contenu: str = ""
     categorie: str | None = Field(default=None, max_length=80)
     publie: bool = False
+    # Liens de vidéos TikTok / publications Instagram à intégrer dans l'article
+    embeds: list[str] = Field(default_factory=list, max_length=30)
 
 
 class ArticleCard(ORM):
@@ -179,10 +181,24 @@ class ArticleCard(ORM):
     temps_lecture: int = 1
 
 
+class ArticleMediaOut(ORM):
+    id: int
+    fichier: str
+    media_type: str
+
+
+class EmbedOut(BaseModel):
+    plateforme: str  # "tiktok" ou "instagram"
+    id: str
+    url: str
+
+
 class ArticleOut(ArticleCard):
     contenu: str
     created_at: datetime | None = None
     updated_at: datetime | None = None
+    medias: list[ArticleMediaOut] = []
+    embeds: list[EmbedOut] = []
 
 
 class ArticlePage(BaseModel):

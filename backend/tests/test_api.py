@@ -309,3 +309,37 @@ def test_migration_ancienne_base():
     assert "video" in {c["name"] for c in inspect(eng).get_columns("hotels")}
     with eng.connect() as c:
         assert c.execute(text("SELECT media_type FROM galerie")).scalar() == "image"
+
+
+def test_article_illustrations_et_videos_sociales():
+    import os
+
+    from app.config import settings
+
+    h = token()
+    a = client.post("/api/admin/blog", headers=h, json={
+        "titre": "Sortie au Saloum", "publie": True,
+        "embeds": ["https://www.tiktok.com/@aventurierblvck/video/7301234567890123456?is_from_webapp=1",
+                   "https://www.instagram.com/reel/C1a2B3c4D5e/?utm_source=ig_web_copy_link"]}).json()
+    assert [e["plateforme"] for e in a["embeds"]] == ["tiktok", "instagram"]
+    assert a["embeds"][0] == {"plateforme": "tiktok", "id": "7301234567890123456",
+                              "url": "https://www.tiktok.com/@aventurierblvck/video/7301234567890123456"}
+    assert a["embeds"][1]["id"] == "reel/C1a2B3c4D5e"
+
+    r = client.put(f"/api/admin/blog/{a['id']}", headers=h, json={"titre": "Sortie au Saloum", "embeds": ["https://youtube.com/x"]})
+    assert r.status_code == 422 and "non reconnu" in r.json()["detail"]
+
+    r = client.post(f"/api/admin/blog/{a['id']}/medias", headers=h, files={"media": ("p.png", png(), "image/png")})
+    r = client.post(f"/api/admin/blog/{a['id']}/medias", headers=h, files={"media": ("v.mp4", MP4, "video/mp4")})
+    medias = r.json()["medias"]
+    assert [m["media_type"] for m in medias] == ["image", "video"]
+    pub = client.get(f"/api/blog/{a['slug']}").json()
+    assert len(pub["medias"]) == 2 and len(pub["embeds"]) == 2
+
+    r = client.delete(f"/api/admin/blog/{a['id']}/medias/{medias[0]['id']}", headers=h)
+    assert [m["media_type"] for m in r.json()["medias"]] == ["video"]
+    video = settings.upload_dir / medias[1]["fichier"].split("/")[-1]
+    assert video.exists()
+    client.delete(f"/api/admin/blog/{a['id']}", headers=h)
+    assert not video.exists()  # fichiers supprimés avec l'article
+    assert client.post(f"/api/admin/blog/{a['id']}/medias", files={"media": ("p.png", png(), "image/png")}).status_code == 401
