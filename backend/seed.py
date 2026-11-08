@@ -13,6 +13,7 @@ from app.database import Base, SessionLocal, engine
 from datetime import datetime, timedelta
 
 from app.migrations import mettre_a_jour
+from articles_blog import ARTICLES
 from app.models import Admin, Article, Hotel, Photo, Service, Slide
 
 DEMO_SERVICES = [
@@ -142,6 +143,9 @@ def main():
             for i, (titre, slug, cat, extrait, image, contenu) in enumerate(DEMO_ARTICLES):
                 db.add(Article(titre=titre, slug=slug, categorie=cat, extrait=extrait, image=image, contenu=contenu,
                                publie=True, published_at=datetime.now() - timedelta(days=3 * i)))
+            # Articles prêts à illustrer : en brouillon, à publier depuis l'admin après ajout des photos.
+            for titre, slug, cat, extrait, contenu in ARTICLES:
+                db.add(Article(titre=titre, slug=slug, categorie=cat, extrait=extrait, contenu=contenu, publie=False))
             print("Données de démonstration ajoutées.")
         db.commit()
 

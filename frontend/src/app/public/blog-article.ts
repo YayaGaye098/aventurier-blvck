@@ -156,6 +156,9 @@ import { SiteHeader } from './site-header';
     .prose ::ng-deep blockquote p:last-child { margin: 0; }
     .prose ::ng-deep em { color: var(--muted); }
     .prose ::ng-deep hr { border: 0; border-top: 1px solid var(--line); margin: 2rem 0; }
+    .prose ::ng-deep table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: .95rem; display: block; overflow-x: auto; }
+    .prose ::ng-deep th, .prose ::ng-deep td { text-align: left; padding: .65rem .8rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .prose ::ng-deep th { background: var(--teal-mist); color: var(--teal-dark); font-weight: 700; }
 
     .illus { margin-top: 2.5rem; }
     .illus-title { font-size: 1.35rem; margin-bottom: 1rem; display: flex; align-items: center; gap: .5rem; }
