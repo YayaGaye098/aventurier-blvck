@@ -41,12 +41,12 @@ DEMO_SLIDES = [
 ]
 
 DEMO_HOTELS = [
-    ("Hôtel partenaire (exemple)", "Saly", 4, "/uploads/savana.webp", True),
-    ("Résidence partenaire (exemple)", "Dakar", 5, "/uploads/radisson.webp", True),
-    ("Lodge partenaire (exemple)", "Saint-Louis", 3, "/uploads/sindia.webp", False),
-    ("Hôtel bord de mer (exemple)", "Dakar", 4, "/uploads/img-hotel-lagon-ii-dakar-35.webp", False),
-    ("Écolodge (exemple)", "Lac Rose", 3, "/uploads/photo2jpg.webp", False),
-    ("Hôtel familial (exemple)", "Mbour", 3, "/uploads/foto-hotel-1224ed5e.webp", True),
+    ("Hôtel partenaire", "Saly", 4, "/uploads/savana.webp", True),
+    ("Résidence partenaire", "Dakar", 5, "/uploads/radisson.webp", True),
+    ("Lodge partenaire", "Saint-Louis", 3, "/uploads/sindia.webp", False),
+    ("Hôtel bord de mer", "Dakar", 4, "/uploads/img-hotel-lagon-ii-dakar-35.webp", False),
+    ("Écolodge", "Lac Rose", 3, "/uploads/photo2jpg.webp", False),
+    ("Hôtel familial", "Mbour", 3, "/uploads/foto-hotel-1224ed5e.webp", True),
 ]
 
 DEMO_ARTICLES = [
@@ -148,7 +148,7 @@ def main():
             for nom, ville, etoiles, image, featured in DEMO_HOTELS:
                 db.add(Hotel(
                     nom=nom, ville=ville, etoiles=etoiles, image=image, featured=featured,
-                    description="Établissement d'exemple : remplacez-le par un vrai partenaire depuis l'espace admin.",
+                    description="Établissement partenaire sélectionné par Aventurier Blvck. Contactez-nous pour les tarifs et disponibilités.",
                 ))
             for ev in DEMO_EVENEMENTS:
                 db.add(Evenement(**ev))
