@@ -6,7 +6,7 @@ import { marked } from 'marked';
 import { concatMap, of } from 'rxjs';
 import { ApiService, errorMessage } from '../core/api.service';
 import { ArticleInput, ArticleMedia } from '../core/models';
-import { AdminUi, preview } from './ui';
+import { MAX_VIDEO_MO, AdminUi, preview } from './ui';
 
 const VIDE: ArticleInput = { titre: '', slug: '', extrait: '', contenu: '', categorie: '', publie: false, embeds: [] };
 
@@ -95,7 +95,7 @@ const VIDE: ArticleInput = { titre: '', slug: '', extrait: '', contenu: '', cate
                 }
               </div>
             }
-            <p class="hint">Affichées en galerie sous le texte de l'article. Photo 5 Mo, vidéo 60 Mo max.</p>
+            <p class="hint">Affichées en galerie sous le texte de l'article. Photo 20 Mo, vidéo 200 Mo max.</p>
           } @else {
             <p class="hint">Enregistrez d'abord l'article (brouillon) pour pouvoir ajouter ses photos et vidéos.</p>
           }
@@ -305,8 +305,8 @@ export class BlogEditor {
     let fichiers = [...(input.files ?? [])];
     input.value = '';
     if (!id || !fichiers.length) return;
-    const lourdes = fichiers.filter((f) => f.type.startsWith('video/') && f.size > 60 * 1024 * 1024);
-    if (lourdes.length) this.ui.notify(`${lourdes.length} vidéo(s) de plus de 60 Mo ignorée(s).`, true);
+    const lourdes = fichiers.filter((f) => f.type.startsWith('video/') && f.size > MAX_VIDEO_MO * 1024 * 1024);
+    if (lourdes.length) this.ui.notify(`${lourdes.length} vidéo(s) de plus de 200 Mo ignorée(s).`, true);
     fichiers = fichiers.filter((f) => !lourdes.includes(f));
     const suivant = () => {
       const f = fichiers.shift();

@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Observable, concatMap, filter, map, of, tap } from 'rxjs';
 import { ApiService, errorMessage } from '../core/api.service';
 import { Hotel, HotelInput, VILLES } from '../core/models';
-import { AdminUi, preview } from './ui';
+import { MAX_VIDEO_MO, AdminUi, preview } from './ui';
 
 const VIDE: HotelInput = {
   nom: '', ville: 'Dakar', description: '', adresse: '', telephone: '', email: '', site_web: '',
@@ -66,14 +66,14 @@ const VIDE: HotelInput = {
             <div class="adm-drawer-body">
               <label class="adm-drop" [class.over]="over()" (dragover)="$event.preventDefault(); over.set(true)" (dragleave)="over.set(false)" (drop)="drop($event)">
                 @if (apercu()) { <img [src]="apercu()" alt=""> } @else { <div class="ph"><i class="fas fa-image"></i></div> }
-                <p><strong>Choisir une photo</strong><br>ou la glisser ici · JPG, PNG, WEBP · 5 Mo max</p>
+                <p><strong>Choisir une photo</strong><br>ou la glisser ici · JPG, PNG, WEBP · 20 Mo max</p>
                 <input type="file" accept="image/*" hidden (change)="choisir($event)">
               </label>
               <label class="adm-drop">
                 @if (videoApercu()) { <video [src]="videoApercu()" muted playsinline class="h-vid"></video> }
                 @else { <div class="ph"><i class="fas fa-video"></i></div> }
                 <p><strong>{{ videoApercu() ? 'Changer la vidéo' : 'Ajouter une vidéo (facultatif)' }}</strong><br>
-                  @if (videoNom()) { {{ videoNom() }} } @else { Visite des chambres, piscine… MP4 ou MOV, 60 Mo max. }</p>
+                  @if (videoNom()) { {{ videoNom() }} } @else { Visite des chambres, piscine… MP4 ou MOV, 200 Mo max. }</p>
                 <input type="file" accept="video/mp4,video/quicktime,video/webm" hidden (change)="choisirVideo($event)">
               </label>
               @if (e.id && videoActuelle() && !videoFichier) {
@@ -181,8 +181,8 @@ export class AdminHotels {
   choisirVideo(ev: Event) {
     const file = (ev.target as HTMLInputElement).files?.[0];
     if (!file) return;
-    if (file.size > 60 * 1024 * 1024) {
-      this.ui.notify('Vidéo trop lourde (60 Mo max). Compressez-la avant de l’envoyer.', true);
+    if (file.size > MAX_VIDEO_MO * 1024 * 1024) {
+      this.ui.notify('Vidéo trop lourde (200 Mo max). Compressez-la avant de l’envoyer.', true);
       return;
     }
     this.libererVideo();

@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { from, concatMap, finalize } from 'rxjs';
 import { ApiService, errorMessage } from '../core/api.service';
 import { Photo } from '../core/models';
-import { AdminUi } from './ui';
+import { MAX_VIDEO_MO, AdminUi } from './ui';
 
 @Component({
   selector: 'app-admin-galerie',
@@ -17,7 +17,7 @@ import { AdminUi } from './ui';
            (dragover)="$event.preventDefault(); over.set(true)" (dragleave)="over.set(false)" (drop)="drop($event)">
       <div class="ph">@if (envoi()) { <i class="fas fa-spinner fa-spin"></i> } @else { <i class="fas fa-cloud-arrow-up"></i> }</div>
       <p>@if (envoi()) { Envoi de {{ envoi() }} fichier(s)… }
-         @else { <strong>Ajouter des photos ou des vidéos</strong><br>Cliquez ou glissez-en plusieurs ici · photo 5 Mo max · vidéo 60 Mo max (MP4, MOV) }</p>
+         @else { <strong>Ajouter des photos ou des vidéos</strong><br>Cliquez ou glissez-en plusieurs ici · photo 20 Mo max · vidéo 200 Mo max (MP4, MOV) }</p>
       <input type="file" accept="image/*,video/mp4,video/quicktime,video/webm" multiple hidden (change)="choisir($event)">
     </label>
 
@@ -79,8 +79,8 @@ export class AdminGalerie {
   }
 
   envoyer(files: File[]) {
-    const tropLourdes = files.filter((f) => f.type.startsWith('video/') && f.size > 60 * 1024 * 1024);
-    if (tropLourdes.length) this.ui.notify(`${tropLourdes.length} vidéo(s) de plus de 60 Mo ignorée(s) : compressez-les d'abord.`, true);
+    const tropLourdes = files.filter((f) => f.type.startsWith('video/') && f.size > MAX_VIDEO_MO * 1024 * 1024);
+    if (tropLourdes.length) this.ui.notify(`${tropLourdes.length} vidéo(s) de plus de 200 Mo ignorée(s) : compressez-les d'abord.`, true);
     files = files.filter((f) => !tropLourdes.includes(f));
     if (!files.length) return;
     this.envoi.set(files.length);

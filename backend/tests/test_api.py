@@ -343,3 +343,23 @@ def test_article_illustrations_et_videos_sociales():
     client.delete(f"/api/admin/blog/{a['id']}", headers=h)
     assert not video.exists()  # fichiers supprimés avec l'article
     assert client.post(f"/api/admin/blog/{a['id']}/medias", files={"media": ("p.png", png(), "image/png")}).status_code == 401
+
+
+def test_photo_lourde_redimensionnee_et_redressee():
+    import os
+
+    from app.config import settings
+
+    h = token()
+    im = Image.frombytes("RGB", (3600, 2700), os.urandom(3600 * 2700 * 3))
+    exif = im.getexif()
+    exif[0x0112] = 6  # prise « de côté » par un téléphone
+    buf = BytesIO()
+    im.save(buf, "JPEG", quality=95, exif=exif.tobytes())
+    assert len(buf.getvalue()) > 5 * 1024 * 1024  # refusée avec l'ancienne limite de 5 Mo
+    r = client.post("/api/admin/galerie", headers=h, files={"image": ("grande.jpg", buf.getvalue(), "image/jpeg")})
+    assert r.status_code == 200
+    fichier = settings.upload_dir / r.json()["image"].split("/")[-1]
+    with Image.open(fichier) as res:
+        assert res.size == (1800, 2400)  # redressée (portrait) et ramenée à 2400 px
+    assert fichier.stat().st_size < len(buf.getvalue()) / 3

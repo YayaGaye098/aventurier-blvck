@@ -22,8 +22,8 @@ class Settings(BaseSettings):
     token_expire_minutes: int = 60 * 8
 
     upload_dir: Path = BASE_DIR / "uploads"
-    max_upload_mb: int = 5
-    max_video_mb: int = 60
+    max_upload_mb: int = 20   # photos (redimensionnées et compressées à l'envoi)
+    max_video_mb: int = 200
 
     # Adresse publique du site, utilisée pour les aperçus de liens (ex. https://aventurierblvck.onrender.com).
     # Vide : déduite automatiquement de la requête.

@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Observable, concatMap, filter, map, of, tap } from 'rxjs';
 import { ApiService, errorMessage } from '../core/api.service';
 import { Evenement, EvenementInput } from '../core/models';
-import { AdminUi, preview } from './ui';
+import { MAX_VIDEO_MO, AdminUi, preview } from './ui';
 
 const VIDE = (): EvenementInput => ({
   titre: '', lieu: '', description: '', date_debut: '', prix_adulte: null, prix_enfant: null, telephone: '', actif: true,
@@ -87,7 +87,7 @@ const VIDE = (): EvenementInput => ({
               </div>
 
               <div class="field">
-                <label>Vidéo (MP4, MOV ou WEBM, 60 Mo max)</label>
+                <label>Vidéo (MP4, MOV ou WEBM, 200 Mo max)</label>
                 <label class="adm-drop">
                   @if (videoApercu()) { <video [src]="videoApercu()" muted playsinline class="adm-video"></video> }
                   @else { <div class="ph"><i class="fas fa-video"></i></div> }
@@ -183,8 +183,8 @@ export class AdminEvenements {
   choisirVideo(ev: Event) {
     const file = (ev.target as HTMLInputElement).files?.[0];
     if (!file) return;
-    if (file.size > 60 * 1024 * 1024) {
-      this.ui.notify('Vidéo trop lourde (60 Mo max). Compressez-la avant de l’envoyer.', true);
+    if (file.size > MAX_VIDEO_MO * 1024 * 1024) {
+      this.ui.notify('Vidéo trop lourde (200 Mo max). Compressez-la avant de l’envoyer.', true);
       return;
     }
     this.libererApercu();

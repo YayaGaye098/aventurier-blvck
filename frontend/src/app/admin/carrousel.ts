@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Observable, concatMap, filter, forkJoin, map, of, tap } from 'rxjs';
 import { ApiService, errorMessage } from '../core/api.service';
 import { Slide, SlideInput } from '../core/models';
-import { AdminUi } from './ui';
+import { MAX_VIDEO_MO, AdminUi } from './ui';
 
 const VIDE = (): SlideInput => ({ titre: '', accent: '', texte: '', ordre: 0, actif: true });
 
@@ -65,7 +65,7 @@ const VIDE = (): SlideInput => ({ titre: '', accent: '', texte: '', ordre: 0, ac
           @if (aproposVideo()) {
             <button class="btn btn-ghost" type="button" (click)="retirerApropos()"><i class="fas fa-trash"></i> Retirer</button>
           }
-          <small>MP4 ou MOV, 60 Mo max. Format vertical ou carré idéal.</small>
+          <small>MP4 ou MOV, 200 Mo max. Format vertical ou carré idéal.</small>
         </div>
       </div>
     </section>
@@ -86,7 +86,7 @@ const VIDE = (): SlideInput => ({ titre: '', accent: '', texte: '', ordre: 0, ac
                     @if (apercuVideo()) { <video [src]="a" muted playsinline class="car-prev"></video> }
                     @else { <img [src]="a" alt=""> }
                   } @else { <div class="ph"><i class="fas fa-photo-film"></i></div> }
-                  <p><strong>Choisir une photo ou une vidéo</strong><br>Format paysage de préférence. Vidéo : 60 Mo max, courte (10 à 20 s).</p>
+                  <p><strong>Choisir une photo ou une vidéo</strong><br>Format paysage de préférence. Vidéo : 200 Mo max, courte (10 à 20 s).</p>
                   <input type="file" accept="image/*,video/mp4,video/quicktime,video/webm" hidden (change)="choisir($event)">
                 </label>
               </div>
@@ -155,8 +155,8 @@ export class AdminCarrousel {
     const file = input.files?.[0];
     input.value = '';
     if (!file) return;
-    if (file.size > 60 * 1024 * 1024) {
-      this.ui.notify('Vidéo trop lourde (60 Mo max). Compressez-la avant de l’envoyer.', true);
+    if (file.size > MAX_VIDEO_MO * 1024 * 1024) {
+      this.ui.notify('Vidéo trop lourde (200 Mo max). Compressez-la avant de l’envoyer.', true);
       return;
     }
     this.aproposEnvoi.set(0);
@@ -201,8 +201,8 @@ export class AdminCarrousel {
     if (!file) return;
     const video = file.type.startsWith('video/');
     if (!video && !file.type.startsWith('image/')) return;
-    if (video && file.size > 60 * 1024 * 1024) {
-      this.ui.notify('Vidéo trop lourde (60 Mo max). Compressez-la avant de l’envoyer.', true);
+    if (video && file.size > MAX_VIDEO_MO * 1024 * 1024) {
+      this.ui.notify('Vidéo trop lourde (200 Mo max). Compressez-la avant de l’envoyer.', true);
       return;
     }
     this.liberer();

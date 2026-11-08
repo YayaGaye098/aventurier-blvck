@@ -14,6 +14,10 @@ export class AdminUi {
   }
 }
 
+/** Tailles maximales acceptées par le serveur (garder en accord avec backend/app/config.py). */
+export const MAX_PHOTO_MO = 20;
+export const MAX_VIDEO_MO = 200;
+
 /** Lit un fichier image et renvoie un aperçu (data URL). */
 export function preview(file: File): Promise<string> {
   return new Promise((resolve) => {
