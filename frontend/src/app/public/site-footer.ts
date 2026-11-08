@@ -16,6 +16,9 @@ import { track } from '../core/track';
           <a routerLink="/blog">Blog</a>
           <a routerLink="/" fragment="contact">Contact</a>
         </nav>
+        @if (agence.email) {
+          <a class="mail" [href]="'mailto:' + agence.email"><i class="fas fa-envelope"></i> {{ agence.email }}</a>
+        }
         <div class="socials">
           <a [href]="agence.instagram" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
           <a [href]="agence.tiktok" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
@@ -39,6 +42,10 @@ import { track } from '../core/track';
     .flinks { display: flex; flex-wrap: wrap; justify-content: center; gap: .4rem 1.4rem; }
     .flinks a { color: var(--ink); text-decoration: none; font-weight: 600; font-size: .92rem; }
     .flinks a:hover { color: var(--teal); }
+    .mail { display: inline-flex; align-items: center; gap: .5rem; color: var(--ink); font-weight: 600; font-size: .95rem;
+      text-decoration: none; overflow-wrap: anywhere; }
+    .mail i { color: var(--teal); }
+    .mail:hover { color: var(--teal); }
     .socials { display: flex; gap: .6rem; }
     .socials a { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; background: #fff; color: var(--teal); border: 1px solid var(--line); text-decoration: none; transition: .2s; }
     .socials a:hover { background: var(--teal); color: #fff; }

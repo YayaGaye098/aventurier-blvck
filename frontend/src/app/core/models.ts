@@ -173,6 +173,7 @@ export const VILLES = [
 /** Coordonnées publiques de l'agence (à compléter). */
 export const AGENCE = {
   whatsapp: '221771034149', // +221 77 103 41 49 (sans + ni espaces)
+  email: 'laventurierblvck@gmail.com',
   instagram: 'https://www.instagram.com/aventurier_blvck',
   tiktok: 'https://www.tiktok.com/@aventurierblvck',
   facebook: '',
