@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 
 from app.migrations import mettre_a_jour
 from articles_blog import ARTICLES
-from app.models import Admin, Article, Hotel, Photo, Service, Slide
+from app.models import Admin, Article, Evenement, Hotel, Photo, Service, Slide
 
 DEMO_SERVICES = [
     ("Balade au Lac Rose", "Découverte du lac, des récolteurs de sel et des dunes voisines.", "fa-water", "Demi-journée", "/uploads/aventure_lac-rose.jpeg"),
@@ -101,6 +101,18 @@ Rencontre avec les récolteurs de sel, balade dans les dunes, déjeuner au bord 
 *Article d'exemple : modifiez-le ou supprimez-le depuis l'espace admin.*"""),
 ]
 
+# Prochaine sortie de groupe (affichée dans « Prochains départs » tant que la date n'est pas passée).
+DEMO_EVENEMENTS = [
+    dict(
+        titre="Cap sur le Sine Saloum", lieu="Sine Saloum",
+        description="Une escapade inoubliable au cœur de la nature : mangroves, balade en pirogue, "
+                    "découvertes et détente. Plus qu'un voyage, une expérience unique !",
+        date_debut=datetime(2026, 11, 14, 8, 0), prix_adulte=32900, prix_enfant=28900,
+        telephone="77 103 41 49", image="/uploads/evenement_sine-saloum.jpeg",
+        video="/uploads/evenement_sine-saloum.mp4", actif=True,
+    ),
+]
+
 DEMO_PHOTOS = [
     "1.jpeg", "2.jpeg", "3.jpeg", "4.jpeg", "6.jpeg", "7.jpeg", "8.jpeg",
 ]
@@ -138,6 +150,8 @@ def main():
                     nom=nom, ville=ville, etoiles=etoiles, image=image, featured=featured,
                     description="Établissement d'exemple : remplacez-le par un vrai partenaire depuis l'espace admin.",
                 ))
+            for ev in DEMO_EVENEMENTS:
+                db.add(Evenement(**ev))
             for name in DEMO_PHOTOS:
                 db.add(Photo(image=f"/uploads/{name}", titre="Aventure"))
             for i, (titre, slug, cat, extrait, image, contenu) in enumerate(DEMO_ARTICLES):
