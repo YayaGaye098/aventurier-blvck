@@ -1,0 +1,32 @@
+# Déploiement Render « Blueprint » : Render lit ce fichier et crée le service tout seul.
+# Le disque persistant (base + photos/vidéos) demande au minimum le plan Starter.
+services:
+  - type: web
+    name: aventurier-blvck
+    runtime: docker
+    plan: starter
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeploy: true
+    disk:
+      name: donnees
+      mountPath: /var/data
+      sizeGB: 5
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_USERNAME
+        value: guide
+      - key: ADMIN_PASSWORD # demandé à la création (8 caractères min.), utilisé au premier démarrage
+        sync: false
+      - key: MAX_VIDEO_MB
+        value: "60"
+      - key: SITE_URL # ex. https://aventurier-blvck.onrender.com (ou votre nom de domaine)
+        sync: false
+      - key: WHATSAPP_NOTIFY_PHONE
+        value: "221771034149"
+      - key: CALLMEBOT_APIKEY # clé CallMeBot, voir backend/app/notify.py
+        sync: false

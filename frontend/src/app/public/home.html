@@ -1,0 +1,413 @@
+<app-site-header [overlay]="true" />
+
+<!-- ── Accueil ─────────────────────────────────────── -->
+<section id="accueil" class="hero">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="container hero-inner">
+    @if (prochain(); as ev) {
+      <a href="#departs" class="hero-next">
+        <span class="hero-next-tag">Prochain départ</span>
+        <span>{{ ev.date_debut | date:'EEE d MMM' }} · {{ ev.titre }}</span>
+        <i class="fas fa-arrow-right"></i>
+      </a>
+    } @else {
+      <p class="eyebrow"><i class="fas fa-location-dot"></i> Sénégal · Balades · Excursions · Séjours</p>
+    }
+    <h1>Explorez le Sénégal<br><span>autrement.</span></h1>
+    <p class="lead">Des sorties à vélo entre les baobabs, des balades au bord du fleuve, des week-ends dans les plus beaux coins du pays, avec un guide passionné et des hôtels partenaires choisis avec soin.</p>
+    <div class="hero-cta">
+      <a href="#aventures" class="btn btn-sun"><i class="fas fa-compass"></i> Voir les aventures</a>
+      <a href="#hotels" class="btn btn-light"><i class="fas fa-bed"></i> Nos hôtels partenaires</a>
+    </div>
+    <ul class="hero-facts">
+      <li><strong>10 ans+</strong><span>d'expérience terrain</span></li>
+      <li><strong>Sur mesure</strong><span>seul, en couple ou en groupe</span></li>
+      <li><strong>Partenaires</strong><span>hôtels et lodges vérifiés</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ── Prochains départs (événements datés) ───────── -->
+@if (evenements().length) {
+  <section id="departs" class="section section-dark">
+    <div class="container">
+      <div class="section-head">
+        <p class="kicker">Prochains départs</p>
+        <h2>Rejoignez notre prochaine sortie de groupe</h2>
+        <p class="sub">Les places partent vite : réservez directement sur WhatsApp.</p>
+        <div class="event-socials">
+          <span>Plus de vidéos de nos sorties :</span>
+          <a [href]="agence.tiktok" target="_blank" rel="noopener" class="btn btn-light btn-sm"><i class="fab fa-tiktok"></i> TikTok</a>
+          <a [href]="agence.instagram" target="_blank" rel="noopener" class="btn btn-light btn-sm"><i class="fab fa-instagram"></i> Instagram</a>
+        </div>
+      </div>
+
+      <div class="events">
+        @for (e of evenements(); track e.id) {
+          <article class="event" [id]="'depart-' + e.id">
+            <div class="event-media">
+              @if (e.video) {
+                <video #vid [src]="e.video" [poster]="e.image || ''" autoplay muted loop playsinline preload="metadata"
+                       [attr.aria-label]="'Vidéo : ' + e.titre"></video>
+                <button type="button" class="event-sound" (click)="basculerSon(e.id, vid)"
+                        [attr.aria-label]="sonActif() === e.id ? 'Couper le son' : 'Activer le son'">
+                  <i class="fas" [class.fa-volume-high]="sonActif() === e.id" [class.fa-volume-xmark]="sonActif() !== e.id"></i>
+                </button>
+              } @else if (e.image) {
+                <img [src]="e.image" [alt]="e.titre" loading="lazy">
+              } @else {
+                <div class="event-ph"><i class="fas fa-calendar-day"></i></div>
+              }
+              <div class="event-date" aria-hidden="true">
+                <strong>{{ e.date_debut | date:'d' }}</strong>
+                <span>{{ e.date_debut | date:'MMM' }}</span>
+              </div>
+              <span class="event-countdown"><i class="fas fa-fire"></i> {{ compteARebours(e) }}</span>
+            </div>
+
+            <div class="event-body">
+              <ul class="event-meta">
+                <li><i class="far fa-calendar"></i> {{ e.date_debut | date:'EEEE d MMMM y' }}</li>
+                <li><i class="far fa-clock"></i> Départ à {{ e.date_debut | date:'HH:mm' }}</li>
+                @if (e.lieu) { <li><i class="fas fa-location-dot"></i> {{ e.lieu }}</li> }
+              </ul>
+              <h3>{{ e.titre }}</h3>
+              @if (e.description) { <p class="event-desc">{{ e.description }}</p> }
+
+              @if (e.prix_adulte || e.prix_enfant) {
+                <div class="event-prices">
+                  @if (e.prix_adulte) {
+                    <div><span>Adulte</span><strong>{{ e.prix_adulte | number:'1.0-0' }}</strong><small>FCFA</small></div>
+                  }
+                  @if (e.prix_enfant) {
+                    <div><span>Enfant</span><strong>{{ e.prix_enfant | number:'1.0-0' }}</strong><small>FCFA</small></div>
+                  }
+                </div>
+              }
+
+              <div class="event-actions">
+                @if (whatsappEvenement(e); as wa) {
+                  <a [href]="wa" target="_blank" rel="noopener" class="btn btn-wa" (click)="suivre('whatsapp', e.titre)"><i class="fab fa-whatsapp"></i> Réserver sur WhatsApp</a>
+                } @else {
+                  <button type="button" class="btn btn-sun" (click)="reserverEvenement(e)">Réserver ma place</button>
+                }
+                @if (e.telephone) {
+                  <a [href]="telHref(e.telephone)" class="btn btn-light" (click)="suivre('appel', e.titre)"><i class="fas fa-phone"></i> {{ e.telephone }}</a>
+                }
+                <button type="button" class="btn btn-icon btn-light" (click)="partager(e)" aria-label="Partager l'événement">
+                  <i class="fas" [class.fa-share-nodes]="partage() !== e.id" [class.fa-check]="partage() === e.id"></i>
+                </button>
+              </div>
+              @if (partage() === e.id) { <p class="event-copied" role="status">Lien copié : partagez-le à vos amis !</p> }
+            </div>
+          </article>
+        }
+      </div>
+    </div>
+  </section>
+}
+
+<!-- ── Aventures ───────────────────────────────────── -->
+<section id="aventures" class="section">
+  <div class="container">
+    <div class="section-head">
+      <p class="kicker">Nos aventures</p>
+      <h2>Choisissez votre prochaine sortie</h2>
+      <p class="sub">Balades, excursions d'une journée ou séjours de plusieurs jours : chaque sortie s'adapte à votre rythme.</p>
+    </div>
+
+    @if (loading()) {
+      <div class="grid-services">
+        @for (i of [1,2,3]; track i) { <div class="skeleton" style="height:380px"></div> }
+      </div>
+    } @else if (services().length === 0) {
+      <p class="empty">Les prochaines aventures arrivent bientôt. Écrivez-nous pour une sortie sur mesure.</p>
+    } @else {
+      <div class="grid-services">
+        @for (s of services(); track s.id) {
+          <article class="service">
+            <div class="service-media">
+              @if (s.image) {
+                <img [src]="s.image" [alt]="s.titre" loading="lazy">
+              } @else {
+                <div class="service-ph"><i [class]="iconClass(s.icone)"></i></div>
+              }
+              <span class="service-badge" aria-hidden="true"><i [class]="iconClass(s.icone)"></i></span>
+              @if (s.duree) { <span class="pill pill-city"><i class="far fa-clock"></i> {{ s.duree }}</span> }
+              <h3 class="service-title">{{ s.titre }}</h3>
+            </div>
+            <div class="service-body">
+              <p>{{ s.description }}</p>
+            </div>
+            <footer class="service-foot">
+              <div class="price">
+                @if (s.prix) {
+                  <strong>{{ s.prix | number:'1.0-0' }} FCFA</strong>
+                } @else {
+                  <small>Prix sur demande</small>
+                }
+              </div>
+              <button class="btn btn-primary btn-sm" type="button" (click)="reserver(s.titre)">
+                Je veux y aller <i class="fas fa-arrow-right"></i>
+              </button>
+            </footer>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ── Hôtels ──────────────────────────────────────── -->
+<section id="hotels" class="section section-tint">
+  <div class="container">
+    <div class="section-head">
+      <p class="kicker">Hôtels partenaires</p>
+      <h2>Où dormir pendant votre séjour</h2>
+      <p class="sub">Une sélection d'hébergements avec qui nous travaillons, partout au Sénégal.</p>
+    </div>
+
+    @if (villes().length > 1) {
+      <div class="chips" role="tablist" aria-label="Filtrer par ville">
+        <button type="button" class="chip" [class.on]="ville() === 'all'" (click)="ville.set('all')">Toutes les villes</button>
+        @for (v of villes(); track v) {
+          <button type="button" class="chip" [class.on]="ville() === v" (click)="ville.set(v)">{{ v }}</button>
+        }
+      </div>
+    }
+
+    @if (!loading() && hotels().length === 0) {
+      <p class="empty">Notre sélection d'hôtels est en cours de mise à jour.</p>
+    }
+
+    <div class="grid-hotels">
+      @for (h of hotelsFiltres(); track h.id) {
+        <article class="hotel">
+          <div class="hotel-media">
+            @if (h.image) {
+              <img [src]="h.image" [alt]="h.nom" loading="lazy">
+            } @else {
+              <div class="hotel-ph"><i class="fas fa-hotel"></i></div>
+            }
+            <span class="pill pill-city"><i class="fas fa-location-dot"></i> {{ h.ville }}</span>
+            @if (h.featured) { <span class="pill pill-sun">Coup de cœur</span> }
+          </div>
+          <div class="hotel-body">
+            <div class="stars" [attr.aria-label]="h.etoiles + ' étoiles'">{{ etoiles(h.etoiles) }}</div>
+            <h3>{{ h.nom }}</h3>
+            <p class="hotel-desc">{{ h.description }}</p>
+            @if (h.adresse) { <p class="hotel-meta"><i class="fas fa-map-pin"></i> {{ h.adresse }}</p> }
+          </div>
+          <footer class="hotel-foot">
+            <div class="price">
+              @if (h.prix_nuit) {
+                <strong>{{ h.prix_nuit | number:'1.0-0' }} FCFA</strong><small>/ nuit</small>
+              } @else {
+                <small>Prix sur demande</small>
+              }
+            </div>
+            <div class="hotel-actions">
+              @if (h.telephone) {
+                <a class="btn btn-ghost btn-icon" [href]="'tel:' + h.telephone" [attr.aria-label]="'Appeler ' + h.nom"><i class="fas fa-phone"></i></a>
+              }
+              @if (h.site_web) {
+                <a class="btn btn-ghost btn-icon" [href]="h.site_web" target="_blank" rel="noopener" [attr.aria-label]="'Site de ' + h.nom"><i class="fas fa-arrow-up-right-from-square"></i></a>
+              }
+              <button type="button" class="btn btn-primary btn-sm" (click)="reserver('un séjour à ' + h.nom + ' (' + h.ville + ')')">Réserver</button>
+            </div>
+          </footer>
+        </article>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ── Galerie ─────────────────────────────────────── -->
+<section id="galerie" class="section">
+  <div class="container">
+    <div class="section-head">
+      <p class="kicker">Galerie</p>
+      <h2>Nos dernières sorties</h2>
+      <p class="sub">Retrouvez encore plus de photos et vidéos sur
+        <a [href]="agence.instagram" target="_blank" rel="noopener">Instagram</a> et
+        <a [href]="agence.tiktok" target="_blank" rel="noopener">TikTok</a>.</p>
+    </div>
+    <div class="gallery">
+      @for (p of photos(); track p.id; let i = $index) {
+        <button type="button" class="g-item" (click)="lightbox.set(i)" [attr.aria-label]="'Agrandir la photo ' + (i + 1)">
+          <img [src]="p.image" [alt]="p.titre || 'Aventure'" loading="lazy">
+        </button>
+      }
+    </div>
+  </div>
+</section>
+
+@if (lightbox() !== null) {
+  <div class="lightbox" role="dialog" aria-modal="true" (click)="lightbox.set(null)">
+    <button type="button" class="lb-close" aria-label="Fermer"><i class="fas fa-xmark"></i></button>
+    <button type="button" class="lb-nav lb-prev" aria-label="Précédente" (click)="$event.stopPropagation(); step(-1)"><i class="fas fa-chevron-left"></i></button>
+    <img [src]="photos()[lightbox()!].image" [alt]="photos()[lightbox()!].titre || 'Aventure'" (click)="$event.stopPropagation()">
+    <button type="button" class="lb-nav lb-next" aria-label="Suivante" (click)="$event.stopPropagation(); step(1)"><i class="fas fa-chevron-right"></i></button>
+  </div>
+}
+
+<!-- ── Blog ────────────────────────────────────────── -->
+@if (articles().length) {
+  <section id="blog" class="section section-tint">
+    <div class="container">
+      <div class="section-head section-head-row">
+        <div>
+          <p class="kicker">Le blog</p>
+          <h2>Conseils, récits et bons plans</h2>
+        </div>
+        <a routerLink="/blog" class="btn btn-ghost">Tous les articles <i class="fas fa-arrow-right"></i></a>
+      </div>
+      <div class="posts">
+        @for (a of articles(); track a.id) { <app-post-card [article]="a" /> }
+      </div>
+    </div>
+  </section>
+}
+
+<!-- ── Avis clients ────────────────────────────────── -->
+<section id="avis" class="section">
+  <div class="container">
+    <div class="section-head section-head-row">
+      <div>
+        <p class="kicker">Avis clients</p>
+        <h2>Ils ont vécu l'aventure</h2>
+        @if (noteMoyenne(); as m) {
+          <p class="sub"><span class="avis-stars">★★★★★</span> <strong>{{ m }}/5</strong> sur {{ avis().length }} avis</p>
+        }
+      </div>
+      <button type="button" class="btn btn-ghost" (click)="avisOuvert.set(!avisOuvert())">
+        <i class="fas fa-pen"></i> {{ avisOuvert() ? 'Fermer' : 'Laisser un avis' }}</button>
+    </div>
+
+    @if (avisOuvert()) {
+      <form class="avis-form" (ngSubmit)="envoyerAvis()" #fa="ngForm">
+        <div class="row2">
+          <div class="field"><label for="a-nom">Prénom *</label>
+            <input id="a-nom" name="a-nom" class="input" required maxlength="100" [(ngModel)]="avisForm.nom"></div>
+          <div class="field"><label for="a-orig">Ville / pays</label>
+            <input id="a-orig" name="a-orig" class="input" maxlength="100" [(ngModel)]="avisForm.origine"></div>
+        </div>
+        <div class="field"><label for="a-sortie">Votre sortie</label>
+          <input id="a-sortie" name="a-sortie" class="input" maxlength="150" placeholder="Ex. : Sine Saloum, novembre" [(ngModel)]="avisForm.sortie"></div>
+        <div class="field">
+          <label>Votre note</label>
+          <div class="avis-note" role="radiogroup" aria-label="Note sur 5">
+            @for (n of [1,2,3,4,5]; track n) {
+              <button type="button" [class.on]="n <= avisForm.note" (click)="avisForm.note = n" [attr.aria-label]="n + ' sur 5'">★</button>
+            }
+          </div>
+        </div>
+        <div class="field"><label for="a-texte">Votre avis *</label>
+          <textarea id="a-texte" name="a-texte" class="input" required minlength="10" maxlength="1500" rows="4"
+                    placeholder="Racontez-nous votre expérience…" [(ngModel)]="avisForm.texte"></textarea></div>
+        <div class="sr-only" aria-hidden="true">
+          <label for="a-website">Site web</label>
+          <input id="a-website" name="a-website" tabindex="-1" autocomplete="off" [(ngModel)]="avisForm.website">
+        </div>
+        @if (avisRetour(); as r) {
+          <p class="alert" [class.alert-success]="r.ok" [class.alert-error]="!r.ok" role="status">{{ r.text }}</p>
+        }
+        <button class="btn btn-primary" type="submit" [disabled]="avisEnvoi() || fa.invalid">
+          @if (avisEnvoi()) { <i class="fas fa-spinner fa-spin"></i> } Envoyer mon avis</button>
+      </form>
+    }
+
+    @if (avis().length) {
+      <div class="avis-grid">
+        @for (a of avis(); track a.id) {
+          <figure class="avis-card">
+            <div class="avis-stars" [attr.aria-label]="a.note + ' sur 5'">{{ etoiles(a.note) }}</div>
+            <blockquote>« {{ a.texte }} »</blockquote>
+            <figcaption>
+              @if (a.image) { <img [src]="a.image" alt="" loading="lazy"> }
+              @else { <span class="avis-init" aria-hidden="true">{{ a.nom.charAt(0) }}</span> }
+              <span><strong>{{ a.nom }}</strong>
+                @if (a.origine || a.sortie) { <small>{{ a.origine }}@if (a.origine && a.sortie) { · }{{ a.sortie }}</small> }</span>
+            </figcaption>
+          </figure>
+        }
+      </div>
+    } @else if (!avisOuvert()) {
+      <p class="empty">Vous avez déjà voyagé avec nous ? Soyez le premier à laisser un avis !</p>
+    }
+  </div>
+</section>
+
+<!-- ── À propos ────────────────────────────────────── -->
+<section id="apropos" class="section">
+  <div class="container about">
+    <div class="about-photos">
+      <img src="/images/about1.webp" alt="Nos destinations : Dakar, Sine-Saloum, Saint-Louis, Kédougou, Casamance" loading="lazy">
+      <img src="/images/about2.webp" alt="Nos services : tourisme, sur mesure, groupes, hébergement, location de véhicule" loading="lazy">
+    </div>
+    <div class="about-text">
+      <p class="kicker">Qui sommes-nous ?</p>
+      <h2>Un guide passionné, pas une agence anonyme</h2>
+      <p>Passionné d'aventure et de découvertes depuis plus de 10 ans, je vous accompagne dans des expériences uniques à travers les plus beaux sites du Sénégal. Des plages de Saly aux forêts de Casamance, chaque sortie est pensée pour créer des souvenirs.</p>
+      <ul class="checks">
+        <li><i class="fas fa-circle-check"></i> Itinéraires adaptés à votre niveau et à votre budget</li>
+        <li><i class="fas fa-circle-check"></i> Hôtels et lodges partenaires, visités personnellement</li>
+        <li><i class="fas fa-circle-check"></i> Groupes, couples, familles, entreprises</li>
+      </ul>
+      <a href="#contact" class="btn btn-primary">Parlons de votre projet</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Contact ─────────────────────────────────────── -->
+<section id="contact" class="section">
+  <div class="container contact">
+    <div class="contact-info">
+      <p class="kicker">Contact</p>
+      <h2>Prêt pour l'aventure ?</h2>
+      <p>Dites-nous où vous voulez aller, quand, et à combien vous êtes. On vous répond rapidement avec une proposition.</p>
+      <div class="contact-links">
+        @if (whatsappLink('Bonjour Aventurier Blvck, je souhaite organiser une sortie.'); as wa) {
+          <a [href]="wa" target="_blank" rel="noopener" class="btn btn-primary" (click)="suivre('whatsapp', 'Page contact')"><i class="fab fa-whatsapp"></i> Écrire sur WhatsApp</a>
+        }
+        <a [href]="agence.instagram" target="_blank" rel="noopener" class="btn btn-ghost"><i class="fab fa-instagram"></i> Instagram</a>
+        <a [href]="agence.tiktok" target="_blank" rel="noopener" class="btn btn-ghost"><i class="fab fa-tiktok"></i> TikTok</a>
+      </div>
+    </div>
+
+    <form class="contact-form" (ngSubmit)="envoyer()" #f="ngForm">
+      <div class="row2">
+        <div class="field">
+          <label for="nom">Nom complet *</label>
+          <input id="nom" name="nom" class="input" required [(ngModel)]="form.nom" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="telephone">Téléphone / WhatsApp</label>
+          <input id="telephone" name="telephone" class="input" type="tel" [(ngModel)]="form.telephone" autocomplete="tel">
+        </div>
+      </div>
+      <div class="field">
+        <label for="email">Email *</label>
+        <input id="email" name="email" class="input" type="email" required email [(ngModel)]="form.email" autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="message">Votre projet *</label>
+        <textarea id="message" name="message" class="input" required [(ngModel)]="form.message"
+                  placeholder="Destination, dates, nombre de personnes…"></textarea>
+      </div>
+      <!-- Champ piège anti-spam : ne pas remplir -->
+      <div class="sr-only" aria-hidden="true">
+        <label for="website">Site web</label>
+        <input id="website" name="website" tabindex="-1" autocomplete="off" [(ngModel)]="form.website">
+      </div>
+      @if (feedback(); as fb) {
+        <p class="alert" [class.alert-success]="fb.ok" [class.alert-error]="!fb.ok" role="status">{{ fb.text }}</p>
+      }
+      <button class="btn btn-primary" type="submit" [disabled]="sending() || f.invalid">
+        @if (sending()) { <i class="fas fa-spinner fa-spin"></i> Envoi… } @else { <i class="fas fa-paper-plane"></i> Envoyer ma demande }
+      </button>
+    </form>
+  </div>
+</section>
+
+<app-site-footer />

@@ -1,0 +1,11 @@
+**/node_modules
+**/.angular
+**/dist
+**/__pycache__
+**/.pytest_cache
+**/.venv
+**/*.db
+**/*.db-journal
+**/.env
+.git
+backend/tests
