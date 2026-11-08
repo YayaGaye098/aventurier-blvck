@@ -5,10 +5,14 @@
 """
 import argparse
 import getpass
+import json
+import shutil
+from pathlib import Path
 
 from sqlalchemy import select
 
 from app.auth import hash_password
+from app.config import settings
 from app.database import Base, SessionLocal, engine
 from datetime import datetime, timedelta
 
@@ -123,6 +127,34 @@ DEMO_PHOTOS = [
 ]
 
 
+CONTENU = Path(__file__).resolve().parent / "contenu"
+
+
+def importer_contenu(db) -> bool:
+    """Recharge le contenu exporté depuis le site local (python exporter_contenu.py)."""
+    fichier = CONTENU / "contenu.json"
+    if not fichier.exists():
+        return False
+    donnees = json.loads(fichier.read_text(encoding="utf-8"))
+    con = db.connection()
+    for table, lignes in donnees.items():
+        colonnes = {r[1] for r in con.exec_driver_sql(f"PRAGMA table_info({table})")}
+        for ligne in lignes:
+            cles = [k for k in ligne if k in colonnes]
+            con.exec_driver_sql(
+                f"INSERT INTO {table} ({', '.join(cles)}) VALUES ({', '.join('?' * len(cles))})",
+                tuple(ligne[k] for k in cles),
+            )
+    dossier = CONTENU / "fichiers"
+    if dossier.exists():
+        for f in dossier.iterdir():
+            cible = settings.upload_dir / f.name
+            if not cible.exists():
+                shutil.copy2(f, cible)
+    print("Contenu du site importé :", ", ".join(f"{t} {len(v)}" for t, v in donnees.items()))
+    return True
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--admin", required=True, help="identifiant de l'administrateur")
@@ -145,7 +177,10 @@ def main():
             db.add(Admin(username=args.admin, password_hash=hash_password(password)))
             print(f"Admin « {args.admin} » créé.")
 
-        if args.demo and not db.scalar(select(Service.id).limit(1)):
+        vide = not db.scalar(select(Service.id).limit(1))
+        if args.demo and vide and importer_contenu(db):
+            pass  # contenu réel exporté depuis le site local
+        elif args.demo and vide:
             for titre, desc, icone, duree, image in reversed(DEMO_SERVICES):
                 db.add(Service(titre=titre, description=desc, icone=icone, duree=duree, image=image))
             for i, (fichier, titre, accent, texte) in enumerate(DEMO_SLIDES, start=1):

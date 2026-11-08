@@ -1,0 +1,563 @@
+{
+ "services": [
+  {
+   "id": 1,
+   "titre": "Excursion sur mesure",
+   "description": "Dites-nous ce qui vous fait rêver : on construit l'aventure ensemble.",
+   "icone": "fa-compass",
+   "image": "/uploads/aventure_sur-mesure.jpeg",
+   "prix": null,
+   "duree": null,
+   "actif": 1,
+   "created_at": "2026-11-08 01:25:35"
+  },
+  {
+   "id": 2,
+   "titre": "Coucher de soleil à Saly",
+   "description": "Fin de journée en bord de mer, photos et détente.",
+   "icone": "fa-sun",
+   "image": "/uploads/aventure_coucher-soleil.jpeg",
+   "prix": null,
+   "duree": "2 heures",
+   "actif": 1,
+   "created_at": "2026-11-08 01:25:35"
+  },
+  {
+   "id": 3,
+   "titre": "Week-end en Casamance",
+   "description": "Forêts, villages et plages du sud, avec hébergement chez nos partenaires.",
+   "icone": "fa-tree",
+   "image": "/uploads/aventure_casamance.jpeg",
+   "prix": null,
+   "duree": "2 à 3 jours",
+   "actif": 1,
+   "created_at": "2026-11-08 01:25:35"
+  },
+  {
+   "id": 4,
+   "titre": "Saint-Louis historique",
+   "description": "L'île, le pont Faidherbe, Guet Ndar et la Langue de Barbarie.",
+   "icone": "fa-landmark",
+   "image": "/uploads/aventure_saint-louis.jpeg",
+   "prix": null,
+   "duree": "Journée",
+   "actif": 1,
+   "created_at": "2026-11-08 01:25:35"
+  },
+  {
+   "id": 5,
+   "titre": "Sortie VTT dans le Saloum",
+   "description": "Pistes entre baobabs et bolongs, à rythme tranquille, pour tous niveaux.",
+   "icone": "fa-person-biking",
+   "image": "/uploads/aventure_saloum.jpeg",
+   "prix": null,
+   "duree": "Journée",
+   "actif": 1,
+   "created_at": "2026-11-08 01:25:35"
+  },
+  {
+   "id": 6,
+   "titre": "Balade au Lac Rose",
+   "description": "Découverte du lac, des récolteurs de sel et des dunes voisines.",
+   "icone": "fa-water",
+   "image": "/uploads/aventure_lac-rose.jpeg",
+   "prix": null,
+   "duree": "Demi-journée",
+   "actif": 1,
+   "created_at": "2026-11-08 01:25:35"
+  }
+ ],
+ "slides": [
+  {
+   "id": 1,
+   "media": "/uploads/hero_velo.jpg",
+   "media_type": "image",
+   "titre": "Explorez le Sénégal",
+   "accent": "autrement.",
+   "texte": "Des sorties à vélo entre les baobabs, avec un guide passionné.",
+   "ordre": 1,
+   "actif": 1,
+   "created_at": "2026-11-08 12:10:35"
+  },
+  {
+   "id": 2,
+   "media": "/uploads/hero_saloum.jpg",
+   "media_type": "image",
+   "titre": "Cap sur le",
+   "accent": "Sine Saloum",
+   "texte": "Mangroves, balade en pirogue et îles secrètes : une journée hors du temps.",
+   "ordre": 2,
+   "actif": 1,
+   "created_at": "2026-11-08 12:10:35"
+  },
+  {
+   "id": 3,
+   "media": "/uploads/hero_lac-rose.jpg",
+   "media_type": "image",
+   "titre": "Des paysages",
+   "accent": "qui en mettent plein les yeux.",
+   "texte": "Lac Rose, salines colorées, dunes : le Sénégal comme vous ne l'avez jamais vu.",
+   "ordre": 3,
+   "actif": 1,
+   "created_at": "2026-11-08 12:10:35"
+  },
+  {
+   "id": 4,
+   "media": "/uploads/hero_coucher-soleil.jpg",
+   "media_type": "image",
+   "titre": "Des couchers de soleil",
+   "accent": "inoubliables.",
+   "texte": "Fin de journée les pieds dans l'eau, entre baobabs et lumière dorée.",
+   "ordre": 4,
+   "actif": 1,
+   "created_at": "2026-11-08 12:10:35"
+  },
+  {
+   "id": 5,
+   "media": "/uploads/hero_groupe.jpg",
+   "media_type": "image",
+   "titre": "Partez seul,",
+   "accent": "revenez entre amis.",
+   "texte": "Nos sorties de groupe : bonne humeur, rencontres et souvenirs garantis.",
+   "ordre": 5,
+   "actif": 1,
+   "created_at": "2026-11-08 12:10:35"
+  },
+  {
+   "id": 6,
+   "media": "/uploads/hero_casamance.jpg",
+   "media_type": "image",
+   "titre": "Au cœur des",
+   "accent": "baobabs géants.",
+   "texte": "Villages, nature et traditions : des week-ends authentiques partout au pays.",
+   "ordre": 6,
+   "actif": 1,
+   "created_at": "2026-11-08 12:10:35"
+  }
+ ],
+ "evenements": [
+  {
+   "id": 1,
+   "titre": "Cap sur le Sine Saloum",
+   "lieu": "Sine Saloum",
+   "description": "Une escapade inoubliable au cœur de la nature : mangroves, balade en pirogue, découvertes et détente. Plus qu'un voyage, une expérience unique !",
+   "date_debut": "2026-11-14 08:00:00.000000",
+   "prix_adulte": 32900,
+   "prix_enfant": 28900,
+   "telephone": "77 103 41 49",
+   "image": "/uploads/evenement_sine-saloum.jpeg",
+   "video": "/uploads/evenement_222447bd1dfb.mp4",
+   "actif": 1,
+   "created_at": "2026-11-08 02:30:41"
+  }
+ ],
+ "hotels": [
+  {
+   "id": 1,
+   "nom": "Hôtel partenaire",
+   "ville": "Saly",
+   "description": "Établissement partenaire sélectionné par Aventurier Blvck. Contactez-nous pour les tarifs et disponibilités.",
+   "adresse": null,
+   "telephone": null,
+   "email": null,
+   "site_web": null,
+   "etoiles": 4,
+   "prix_nuit": null,
+   "image": "/uploads/savana.webp",
+   "actif": 1,
+   "featured": 1,
+   "created_at": "2026-11-08 01:25:35",
+   "video": null
+  },
+  {
+   "id": 2,
+   "nom": "Résidence partenaire",
+   "ville": "Dakar",
+   "description": "Établissement partenaire sélectionné par Aventurier Blvck. Contactez-nous pour les tarifs et disponibilités.",
+   "adresse": null,
+   "telephone": null,
+   "email": null,
+   "site_web": null,
+   "etoiles": 5,
+   "prix_nuit": null,
+   "image": "/uploads/radisson.webp",
+   "actif": 1,
+   "featured": 1,
+   "created_at": "2026-11-08 01:25:35",
+   "video": null
+  },
+  {
+   "id": 3,
+   "nom": "Lodge partenaire",
+   "ville": "Saint-Louis",
+   "description": "Établissement partenaire sélectionné par Aventurier Blvck. Contactez-nous pour les tarifs et disponibilités.",
+   "adresse": null,
+   "telephone": null,
+   "email": null,
+   "site_web": null,
+   "etoiles": 3,
+   "prix_nuit": null,
+   "image": "/uploads/sindia.webp",
+   "actif": 1,
+   "featured": 0,
+   "created_at": "2026-11-08 01:25:35",
+   "video": null
+  },
+  {
+   "id": 4,
+   "nom": "Hôtel bord de mer",
+   "ville": "Dakar",
+   "description": "Établissement partenaire sélectionné par Aventurier Blvck. Contactez-nous pour les tarifs et disponibilités.",
+   "adresse": null,
+   "telephone": null,
+   "email": null,
+   "site_web": null,
+   "etoiles": 4,
+   "prix_nuit": null,
+   "image": "/uploads/img-hotel-lagon-ii-dakar-35.webp",
+   "actif": 1,
+   "featured": 0,
+   "created_at": "2026-11-08 01:25:35",
+   "video": null
+  },
+  {
+   "id": 5,
+   "nom": "Écolodge",
+   "ville": "Lac Rose",
+   "description": "Établissement partenaire sélectionné par Aventurier Blvck. Contactez-nous pour les tarifs et disponibilités.",
+   "adresse": null,
+   "telephone": null,
+   "email": null,
+   "site_web": null,
+   "etoiles": 3,
+   "prix_nuit": null,
+   "image": "/uploads/photo2jpg.webp",
+   "actif": 1,
+   "featured": 0,
+   "created_at": "2026-11-08 01:25:35",
+   "video": null
+  },
+  {
+   "id": 6,
+   "nom": "Hôtel familial",
+   "ville": "Mbour",
+   "description": "Établissement partenaire sélectionné par Aventurier Blvck. Contactez-nous pour les tarifs et disponibilités.",
+   "adresse": null,
+   "telephone": null,
+   "email": null,
+   "site_web": null,
+   "etoiles": 3,
+   "prix_nuit": null,
+   "image": "/uploads/foto-hotel-1224ed5e.webp",
+   "actif": 1,
+   "featured": 1,
+   "created_at": "2026-11-08 01:25:35",
+   "video": null
+  },
+  {
+   "id": 7,
+   "nom": "Villa de rêve au Lac Rose",
+   "ville": "Lac Rose",
+   "description": "Découvrez cette magnifique villa composée de 4 chambres, 2 salons et 2 cuisines, idéale pour vos séjours et moments de détente",
+   "adresse": "Lac Rose",
+   "telephone": "771034149",
+   "email": "gaye.yaya@ugb.edu.sn",
+   "site_web": "",
+   "etoiles": 3,
+   "prix_nuit": null,
+   "image": null,
+   "actif": 1,
+   "featured": 1,
+   "created_at": "2026-11-08 13:10:57",
+   "video": "/uploads/hotel_8f6cc7fa72e9.mp4"
+  }
+ ],
+ "galerie": [
+  {
+   "id": 1,
+   "titre": "Aventure",
+   "image": "/uploads/1.jpeg",
+   "categorie": null,
+   "actif": 1,
+   "created_at": "2026-11-08 01:25:35",
+   "media_type": "image"
+  },
+  {
+   "id": 2,
+   "titre": "Aventure",
+   "image": "/uploads/2.jpeg",
+   "categorie": null,
+   "actif": 1,
+   "created_at": "2026-11-08 01:25:35",
+   "media_type": "image"
+  },
+  {
+   "id": 3,
+   "titre": "Aventure",
+   "image": "/uploads/3.jpeg",
+   "categorie": null,
+   "actif": 1,
+   "created_at": "2026-11-08 01:25:35",
+   "media_type": "image"
+  },
+  {
+   "id": 4,
+   "titre": "Aventure",
+   "image": "/uploads/4.jpeg",
+   "categorie": null,
+   "actif": 1,
+   "created_at": "2026-11-08 01:25:35",
+   "media_type": "image"
+  },
+  {
+   "id": 5,
+   "titre": "Aventure",
+   "image": "/uploads/6.jpeg",
+   "categorie": null,
+   "actif": 1,
+   "created_at": "2026-11-08 01:25:35",
+   "media_type": "image"
+  },
+  {
+   "id": 7,
+   "titre": "Aventure",
+   "image": "/uploads/8.jpeg",
+   "categorie": null,
+   "actif": 1,
+   "created_at": "2026-11-08 01:25:35",
+   "media_type": "image"
+  },
+  {
+   "id": 8,
+   "titre": null,
+   "image": "/uploads/galerie_f58d41d893ca.mp4",
+   "categorie": null,
+   "actif": 1,
+   "created_at": "2026-11-08 13:12:59",
+   "media_type": "video"
+  },
+  {
+   "id": 9,
+   "titre": null,
+   "image": "/uploads/galerie_c259069409f2.jpg",
+   "categorie": null,
+   "actif": 1,
+   "created_at": "2026-11-08 16:05:07",
+   "media_type": "image"
+  },
+  {
+   "id": 10,
+   "titre": null,
+   "image": "/uploads/galerie_4b0310367cd3.jpg",
+   "categorie": null,
+   "actif": 1,
+   "created_at": "2026-11-08 16:05:30",
+   "media_type": "image"
+  },
+  {
+   "id": 11,
+   "titre": null,
+   "image": "/uploads/galerie_793600812e6a.jpg",
+   "categorie": null,
+   "actif": 1,
+   "created_at": "2026-11-08 16:05:54",
+   "media_type": "image"
+  }
+ ],
+ "articles": [
+  {
+   "id": 1,
+   "titre": "Que mettre dans son sac pour une sortie à vélo",
+   "slug": "que-mettre-dans-son-sac-pour-une-sortie-a-velo",
+   "extrait": "La liste simple pour profiter d'une journée de VTT entre baobabs et bolongs, sans rien oublier.",
+   "contenu": "Une sortie à vélo au Sénégal, c'est du soleil, de la poussière et beaucoup de bonheur. Voici l'essentiel à emporter.\n\n## L'indispensable\n\n- **De l'eau** : au moins 1,5 litre par personne, plus si la sortie dure toute la journée.\n- **Protection solaire** : crème, casquette ou chapeau, lunettes.\n- **Des vêtements légers** et des chaussures fermées.\n- **Une petite collation** : fruits, arachides, biscuits.\n\n## Le petit plus\n\n- Un foulard contre la poussière, surtout pendant l'harmattan.\n- Un téléphone chargé pour les photos (et une batterie externe).\n\n> Le vélo, le casque et l'encadrement sont fournis par le guide. Vous n'avez qu'à venir !",
+   "image": "/uploads/3.jpeg",
+   "categorie": "Conseils",
+   "publie": 1,
+   "published_at": "2026-11-08 01:25:35.805822",
+   "created_at": "2026-11-08 01:25:35",
+   "updated_at": "2026-11-08 01:25:35",
+   "liens": ""
+  },
+  {
+   "id": 2,
+   "titre": "Lac Rose : quand y aller ?",
+   "slug": "lac-rose-quand-y-aller",
+   "extrait": "La couleur du lac change selon la saison et l'heure. Nos conseils pour la meilleure visite.",
+   "contenu": "Le Lac Rose est l'une des sorties préférées de nos voyageurs.\n\n## La bonne saison\n\nLa couleur est en général plus marquée en saison sèche, quand le soleil est fort et le vent faible.\n\n## Le bon moment de la journée\n\nPrivilégiez le milieu de journée pour la couleur, ou la fin d'après-midi pour la lumière et la fraîcheur.\n\n## Sur place\n\nRencontre avec les récolteurs de sel, balade dans les dunes, déjeuner au bord du lac : comptez une demi-journée.",
+   "image": "/uploads/7.jpeg",
+   "categorie": "Destinations",
+   "publie": 1,
+   "published_at": "2026-11-05 01:25:35.806150",
+   "created_at": "2026-11-08 01:25:35",
+   "updated_at": "2026-11-08 01:25:35",
+   "liens": ""
+  },
+  {
+   "id": 3,
+   "titre": "Partir en groupe : comment on organise votre sortie",
+   "slug": "partir-en-groupe-comment-on-organise-votre-sortie",
+   "extrait": "Anniversaire, sortie d'entreprise, bande d'amis : voici comment se passe l'organisation, étape par étape.",
+   "contenu": "Vous êtes plusieurs et vous voulez une journée mémorable ? On s'occupe de tout.\n\n1. **Vous nous écrivez** : destination, date, nombre de personnes, budget.\n2. **On vous propose un programme** avec transport, activités et repas.\n3. **Vous validez**, on réserve les hôtels ou restaurants partenaires.\n4. **Le jour J**, on vous accompagne du départ au retour.",
+   "image": "/uploads/4.jpeg",
+   "categorie": "Coulisses",
+   "publie": 1,
+   "published_at": "2026-11-02 01:25:35.806202",
+   "created_at": "2026-11-08 01:25:35",
+   "updated_at": "2026-11-08 01:25:35",
+   "liens": ""
+  },
+  {
+   "id": 4,
+   "titre": "Sine Saloum : le guide pour une première escapade",
+   "slug": "sine-saloum-guide-premiere-escapade",
+   "extrait": "Mangroves, bolongs, îles de coquillages et couchers de soleil : tout ce qu'il faut savoir avant de partir à la découverte du delta du Saloum.",
+   "contenu": "Au sud de la Petite-Côte, le fleuve Saloum se perd dans un immense labyrinthe d'eau, de mangroves et d'îles. Le **delta du Saloum** est classé au patrimoine mondial de l'UNESCO, et il suffit d'une journée en pirogue pour comprendre pourquoi.\n\n## Les bolongs, le cœur du Saloum\n\nLes *bolongs*, ce sont les petits bras de mer qui serpentent entre les palétuviers. En pirogue, on glisse au ras de l'eau, au milieu d'un silence qu'on ne trouve plus nulle part. Selon la marée, on aperçoit les racines des palétuviers couvertes d'huîtres, des crabes violonistes et, avec un peu de chance, des pélicans ou des hérons.\n\n## Ce qu'on fait pendant une sortie\n\n- **Balade en pirogue** dans les bolongs et autour des îles\n- **Visite d'un village insulaire** : la vie au rythme de la pêche et de la marée\n- **Les amas de coquillages**, accumulés depuis des siècles par les habitants\n- **Baignade et pause déjeuner** au bord de l'eau\n- **Le coucher de soleil** sur la mangrove, souvent le moment préféré du groupe\n\n> Notre conseil : gardez votre téléphone dans une pochette étanche. Les plus belles photos se prennent depuis la pirogue !\n\n## Quand y aller ?\n\nLa **saison sèche, de novembre à juin**, est idéale : ciel dégagé, eau calme, moustiques discrets. Pendant l'hivernage (juillet à octobre), le paysage devient très vert, mais les pluies peuvent perturber le programme.\n\n## Que prévoir ?\n\n- Chapeau, crème solaire et lunettes de soleil\n- Une tenue qui ne craint pas l'eau et des sandales\n- De l'anti-moustique pour la fin de journée\n- Un peu d'argent liquide pour l'artisanat des villages\n\n## Partir avec nous\n\nLe Saloum fait partie de nos sorties de groupe préférées. Consultez la rubrique **Prochains départs** sur la page d'accueil, ou écrivez-nous sur WhatsApp pour organiser une sortie sur mesure.\n\n![Photo](/uploads/blog_58d70a64b4d8.jpg)\n",
+   "image": "/uploads/blog_5f4fa18b2261.jpg",
+   "categorie": "Destinations",
+   "publie": 1,
+   "published_at": "2026-11-08 16:23:30.158519",
+   "created_at": "2026-11-08 16:21:06",
+   "updated_at": "2026-11-08 16:24:37",
+   "liens": ""
+  },
+  {
+   "id": 5,
+   "titre": "Joal-Fadiouth, l'île aux coquillages",
+   "slug": "joal-fadiouth-ile-aux-coquillages",
+   "extrait": "Une île faite de coquillages, reliée à la terre par un long pont de bois, où cimetière chrétien et musulman se partagent la même colline : bienvenue à Fadiouth.",
+   "contenu": "À la sortie de Joal, un long **pont de bois** enjambe la lagune. De l'autre côté, Fadiouth : une petite île dont le sol est presque entièrement fait de **coquillages**, accumulés au fil des siècles.\n\n## Une île pas comme les autres\n\nIci, pas de voitures : on marche dans des ruelles qui crissent sous les pas. Les greniers à mil sur pilotis, les pirogues colorées et les femmes qui travaillent les coquillages composent un décor unique au Sénégal.\n\n## Le cimetière mixte\n\nSur une île voisine, reliée par une autre passerelle, se trouve le célèbre **cimetière de Fadiouth**. Chrétiens et musulmans y reposent côte à côte, sous les baobabs. C'est un symbole fort de la cohabitation religieuse qui fait la fierté de la région.\n\n> Pensez à rester discret et respectueux pendant la visite du cimetière : c'est un lieu de recueillement pour les familles.\n\n## Joal, la ville de Senghor\n\nJoal est aussi la ville natale de **Léopold Sédar Senghor**, premier président du Sénégal. Sa maison d'enfance se visite et raconte une page importante de l'histoire du pays.\n\n## Nos conseils\n\n- Prévoyez des chaussures fermées ou des sandales solides : les coquillages piquent !\n- Le matin et la fin d'après-midi offrent la plus belle lumière pour les photos\n- Fadiouth se combine très bien avec une sortie dans le **Sine Saloum** tout proche\n\nEnvie de découvrir l'île ? Écrivez-nous sur WhatsApp : on l'intègre à votre programme.\n",
+   "image": "/uploads/blog_5af8dec8f875.jpg",
+   "categorie": "Destinations",
+   "publie": 1,
+   "published_at": "2026-11-08 16:28:52.318182",
+   "created_at": "2026-11-08 16:21:06",
+   "updated_at": "2026-11-08 16:28:52",
+   "liens": ""
+  },
+  {
+   "id": 6,
+   "titre": "Saint-Louis en une journée : notre itinéraire",
+   "slug": "saint-louis-en-une-journee",
+   "extrait": "Pont Faidherbe, maisons coloniales, pêcheurs de Guet Ndar et Langue de Barbarie : notre parcours pour profiter de Saint-Louis du matin au soir.",
+   "contenu": "Ancienne capitale de l'Afrique-Occidentale française et du Sénégal, **Saint-Louis** est classée au patrimoine mondial de l'UNESCO. Une ville de caractère, entre fleuve et océan, qui se découvre très bien en une journée.\n\n## Le matin : l'île et le pont Faidherbe\n\nOn entre dans la ville par le **pont Faidherbe**, long pont métallique devenu le symbole de Saint-Louis. Sur l'île, on flâne entre les **maisons à balcons** aux couleurs pastel, les petites places et les quais du fleuve. C'est le meilleur moment pour les photos, avant la chaleur.\n\n## Le midi : Guet Ndar, le quartier des pêcheurs\n\nDe l'autre côté du petit bras du fleuve, **Guet Ndar** est l'un des quartiers de pêcheurs les plus impressionnants d'Afrique de l'Ouest. Des centaines de pirogues peintes, le retour de la pêche, l'animation sur la plage : une ambiance inoubliable.\n\n> Demandez toujours avant de photographier quelqu'un : un sourire et un mot suffisent souvent.\n\n## L'après-midi : la Langue de Barbarie\n\nLa **Langue de Barbarie** est une fine bande de sable entre le fleuve et l'océan. On y accède en pirogue pour profiter des plages sauvages et observer les oiseaux.\n\n## Pour aller plus loin\n\nLes amoureux de nature peuvent prolonger avec le **parc national des oiseaux du Djoudj**, l'un des plus grands sanctuaires d'oiseaux d'Afrique, idéal de novembre à avril.\n\n## Infos pratiques\n\n- Saint-Louis se trouve à environ 4 à 5 heures de route de Dakar : l'idéal est de partir tôt ou d'y passer une nuit\n- En décembre, le **festival de jazz** et les fêtes de fin d'année animent la ville\n\nVous aimeriez découvrir Saint-Louis avec un guide ? Écrivez-nous, on prépare la journée avec vous.\n",
+   "image": "/uploads/blog_099c52c75aad.jpg",
+   "categorie": "Destinations",
+   "publie": 1,
+   "published_at": "2026-11-08 16:31:06.774568",
+   "created_at": "2026-11-08 16:21:06",
+   "updated_at": "2026-11-08 16:31:06",
+   "liens": ""
+  },
+  {
+   "id": 7,
+   "titre": "Un week-end en Casamance : que faire ?",
+   "slug": "week-end-en-casamance-que-faire",
+   "extrait": "Forêts, rizières, plages de Cap Skirring et villages diola : la Casamance est la région la plus verte du Sénégal. Nos idées pour un week-end réussi.",
+   "contenu": "Au sud du pays, la **Casamance** ne ressemble à aucune autre région du Sénégal : forêts, rizières, palmiers, fleuve bordé de mangroves… et une hospitalité légendaire.\n\n## Comment y aller ?\n\n- **Par la mer** : le bateau entre Dakar et Ziguinchor fait la traversée de nuit. Une aventure en soi !\n- **Par la route**, en traversant la Gambie\n- **En avion**, pour gagner du temps\n\n## Ziguinchor, la porte d'entrée\n\nCapitale de la région, **Ziguinchor** se découvre à pied : le marché, les bords du fleuve Casamance, l'artisanat. C'est le point de départ idéal pour rayonner.\n\n## Les villages diola et les cases à impluvium\n\nLa culture **diola** est au cœur de la Casamance. Dans certains villages, on peut visiter des **cases à impluvium**, de grandes maisons rondes en terre dont le toit recueille l'eau de pluie au centre. Une architecture étonnante, pensée pour la vie en communauté.\n\n## Cap Skirring et ses plages\n\nPlus à l'ouest, **Cap Skirring** offre parmi les plus belles plages du pays : sable fin, cocotiers, eau calme. Parfait pour terminer le week-end en douceur.\n\n## Le fleuve en pirogue\n\nComme dans le Saloum, une **balade en pirogue** dans les bolongs permet de découvrir les mangroves, les oiseaux et les petites îles habitées.\n\n> Bon à savoir : la Casamance est très verte pendant l'hivernage (juillet à octobre), mais les pistes peuvent être difficiles. La saison sèche reste la plus confortable.\n\n## Partir avec nous\n\nNous organisons des week-ends en Casamance avec hébergement chez nos partenaires. Écrivez-nous sur WhatsApp pour connaître les prochaines dates.\n",
+   "image": null,
+   "categorie": "Destinations",
+   "publie": 0,
+   "published_at": null,
+   "created_at": "2026-11-08 16:21:06",
+   "updated_at": "2026-11-08 16:21:06",
+   "liens": ""
+  },
+  {
+   "id": 8,
+   "titre": "Kédougou et le pays Bassari : le Sénégal des cascades",
+   "slug": "kedougou-pays-bassari-cascades",
+   "extrait": "Collines, cascade de Dindéfelo, villages perchés et parc du Niokolo-Koba : à l'est du pays, Kédougou offre un Sénégal sauvage et méconnu.",
+   "contenu": "On imagine souvent le Sénégal plat et sableux. À l'extrême sud-est, autour de **Kédougou**, le paysage change complètement : collines, forêts, rivières et cascades.\n\n## La cascade de Dindéfelo\n\nC'est la star de la région. Après une petite marche dans la forêt, on arrive au pied d'une chute d'eau d'une centaine de mètres qui tombe dans un bassin naturel. La baignade y est un vrai moment de bonheur après la randonnée.\n\n## Le pays Bassari\n\nLes paysages et les cultures **bassari, peul et bédik** sont inscrits au patrimoine mondial de l'UNESCO. On y découvre des **villages perchés** sur les collines, accessibles à pied, où les traditions sont restées très vivantes.\n\n> Prévoyez de bonnes chaussures de marche : certains villages se méritent !\n\n## Le parc national du Niokolo-Koba\n\nSur la route de Kédougou, le **Niokolo-Koba** est le plus grand parc national du Sénégal, lui aussi classé à l'UNESCO. Savane, forêts-galeries et fleuve Gambie : une autre facette de la nature sénégalaise.\n\n## Quand partir ?\n\n- **De novembre à février** : températures plus douces, idéal pour la marche\n- **Mars à juin** : il fait très chaud, partez tôt le matin\n- **Pendant l'hivernage** : les cascades sont spectaculaires, mais certaines pistes deviennent difficiles\n\n## Infos pratiques\n\nKédougou est loin de Dakar : comptez **au moins 3 jours** pour en profiter sans courir. Emportez une gourde, une lampe frontale et des vêtements légers mais couvrants.\n\nEnvie d'aventure ? Écrivez-nous pour préparer votre séjour dans l'est du Sénégal.\n",
+   "image": null,
+   "categorie": "Destinations",
+   "publie": 0,
+   "published_at": null,
+   "created_at": "2026-11-08 16:21:06",
+   "updated_at": "2026-11-08 16:21:06",
+   "liens": ""
+  },
+  {
+   "id": 9,
+   "titre": "Quand partir au Sénégal ? Le guide des saisons",
+   "slug": "quand-partir-au-senegal-saisons",
+   "extrait": "Saison sèche, hivernage, harmattan : à quoi s'attendre selon les mois, et quelle destination choisir à chaque période de l'année.",
+   "contenu": "Le Sénégal se visite toute l'année, mais chaque saison a sa personnalité. Voici comment choisir le bon moment pour votre aventure.\n\n## La saison sèche (novembre à juin)\n\nC'est la période la plus prisée :\n\n- **Ciel bleu** et pas de pluie\n- **Températures agréables** sur la côte, surtout de décembre à février\n- **Idéal pour** : le Sine Saloum, le Lac Rose, Saint-Louis, les sorties à vélo et les balades en pirogue\n\n> Entre décembre et février, l'**harmattan** (vent sec du désert) peut rendre le ciel un peu brumeux et les matinées fraîches. Prévoyez une petite veste !\n\n## La chaleur (avril à juin)\n\nIl fait de plus en plus chaud, surtout à l'intérieur des terres (Kaolack, Tambacounda, Kédougou). Sur la côte, la brise marine reste agréable.\n\n- **Notre conseil** : sorties tôt le matin ou en fin d'après-midi, pauses à l'ombre et beaucoup d'eau\n\n## L'hivernage (juillet à octobre)\n\nC'est la saison des pluies :\n\n- Averses fortes mais souvent courtes, surtout en août et septembre\n- Paysages **très verts**, notamment en Casamance et à Kédougou, où les cascades sont au maximum\n- Chaleur humide et moustiques plus présents\n- Certaines pistes deviennent difficiles\n\nC'est aussi une période plus calme, parfaite pour ceux qui aiment voyager loin des foules.\n\n## En résumé\n\n| Période | Ambiance | Nos destinations conseillées |\n|---|---|---|\n| Novembre – février | Doux et ensoleillé | Saloum, Lac Rose, Saint-Louis, Djoudj |\n| Mars – juin | Chaud et sec | Côte, Petite-Côte, sorties matinales |\n| Juillet – octobre | Vert et pluvieux | Casamance, Kédougou (avec prudence) |\n\n## Et les fêtes ?\n\nLes grandes fêtes religieuses comme la **Tabaski** ou la **Korité** changent de date chaque année. C'est une belle période pour découvrir la culture sénégalaise, mais les transports sont très chargés : réservez à l'avance !\n\nVous hésitez sur la date ? Écrivez-nous sur WhatsApp, on vous conseille selon vos envies.\n",
+   "image": null,
+   "categorie": "Conseils",
+   "publie": 0,
+   "published_at": null,
+   "created_at": "2026-11-08 16:21:06",
+   "updated_at": "2026-11-08 16:21:06",
+   "liens": ""
+  }
+ ],
+ "article_medias": [
+  {
+   "id": 1,
+   "article_id": 2,
+   "fichier": "/uploads/blog_fa7b158a698e.mp4",
+   "media_type": "video",
+   "ordre": 1,
+   "created_at": "2026-11-08 12:57:18"
+  },
+  {
+   "id": 2,
+   "article_id": 2,
+   "fichier": "/uploads/blog_7b5f83f88c82.jpg",
+   "media_type": "image",
+   "ordre": 2,
+   "created_at": "2026-11-08 12:59:41"
+  },
+  {
+   "id": 3,
+   "article_id": 2,
+   "fichier": "/uploads/blog_ca1f1cc552da.jpg",
+   "media_type": "image",
+   "ordre": 3,
+   "created_at": "2026-11-08 12:59:51"
+  },
+  {
+   "id": 4,
+   "article_id": 4,
+   "fichier": "/uploads/blog_4c864c490657.mov",
+   "media_type": "video",
+   "ordre": 1,
+   "created_at": "2026-11-08 16:24:53"
+  },
+  {
+   "id": 5,
+   "article_id": 4,
+   "fichier": "/uploads/blog_d19689b91edb.jpg",
+   "media_type": "image",
+   "ordre": 2,
+   "created_at": "2026-11-08 16:25:06"
+  },
+  {
+   "id": 6,
+   "article_id": 4,
+   "fichier": "/uploads/blog_3e13b054b6fa.jpg",
+   "media_type": "image",
+   "ordre": 3,
+   "created_at": "2026-11-08 16:25:21"
+  },
+  {
+   "id": 7,
+   "article_id": 4,
+   "fichier": "/uploads/blog_e25a12142cb5.jpg",
+   "media_type": "image",
+   "ordre": 4,
+   "created_at": "2026-11-08 16:25:32"
+  },
+  {
+   "id": 8,
+   "article_id": 4,
+   "fichier": "/uploads/blog_667c7cc8af7e.jpg",
+   "media_type": "image",
+   "ordre": 5,
+   "created_at": "2026-11-08 16:25:40"
+  }
+ ],
+ "avis": [],
+ "reglages": []
+}
