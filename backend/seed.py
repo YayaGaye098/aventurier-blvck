@@ -49,6 +49,17 @@ DEMO_HOTELS = [
     ("Hôtel familial", "Mbour", 3, "/uploads/foto-hotel-1224ed5e.webp", True),
 ]
 
+# Hôtels ajoutés par l'agence (avec leur vidéo).
+VRAIS_HOTELS = [
+    dict(
+        nom="Villa de rêve au Lac Rose", ville="Lac Rose", adresse="Lac Rose",
+        description="Découvrez cette magnifique villa composée de 4 chambres, 2 salons et 2 cuisines, "
+                    "idéale pour vos séjours et moments de détente",
+        telephone="771034149", email="gaye.yaya@ugb.edu.sn", etoiles=3, featured=True,
+        video="/uploads/hotel_villa-lac-rose.mp4",
+    ),
+]
+
 DEMO_ARTICLES = [
     ("Que mettre dans son sac pour une sortie à vélo", "que-mettre-dans-son-sac-pour-une-sortie-a-velo", "Conseils",
      "La liste simple pour profiter d'une journée de VTT entre baobabs et bolongs, sans rien oublier.",
@@ -67,9 +78,7 @@ DEMO_ARTICLES = [
 - Un foulard contre la poussière, surtout pendant l'harmattan.
 - Un téléphone chargé pour les photos (et une batterie externe).
 
-> Le vélo, le casque et l'encadrement sont fournis par le guide. Vous n'avez qu'à venir !
-
-*Article d'exemple : modifiez-le ou supprimez-le depuis l'espace admin.*"""),
+> Le vélo, le casque et l'encadrement sont fournis par le guide. Vous n'avez qu'à venir !"""),
     ("Lac Rose : quand y aller ?", "lac-rose-quand-y-aller", "Destinations",
      "La couleur du lac change selon la saison et l'heure. Nos conseils pour la meilleure visite.",
      "/uploads/7.jpeg",
@@ -85,9 +94,7 @@ Privilégiez le milieu de journée pour la couleur, ou la fin d'après-midi pour
 
 ## Sur place
 
-Rencontre avec les récolteurs de sel, balade dans les dunes, déjeuner au bord du lac : comptez une demi-journée.
-
-*Article d'exemple : modifiez-le ou supprimez-le depuis l'espace admin.*"""),
+Rencontre avec les récolteurs de sel, balade dans les dunes, déjeuner au bord du lac : comptez une demi-journée."""),
     ("Partir en groupe : comment on organise votre sortie", "partir-en-groupe-comment-on-organise-votre-sortie", "Coulisses",
      "Anniversaire, sortie d'entreprise, bande d'amis : voici comment se passe l'organisation, étape par étape.",
      "/uploads/4.jpeg",
@@ -96,9 +103,7 @@ Rencontre avec les récolteurs de sel, balade dans les dunes, déjeuner au bord 
 1. **Vous nous écrivez** : destination, date, nombre de personnes, budget.
 2. **On vous propose un programme** avec transport, activités et repas.
 3. **Vous validez**, on réserve les hôtels ou restaurants partenaires.
-4. **Le jour J**, on vous accompagne du départ au retour.
-
-*Article d'exemple : modifiez-le ou supprimez-le depuis l'espace admin.*"""),
+4. **Le jour J**, on vous accompagne du départ au retour."""),
 ]
 
 # Prochaine sortie de groupe (affichée dans « Prochains départs » tant que la date n'est pas passée).
@@ -152,6 +157,8 @@ def main():
                 ))
             for ev in DEMO_EVENEMENTS:
                 db.add(Evenement(**ev))
+            for h in VRAIS_HOTELS:
+                db.add(Hotel(**h))
             for name in DEMO_PHOTOS:
                 db.add(Photo(image=f"/uploads/{name}", titre="Aventure"))
             for i, (titre, slug, cat, extrait, image, contenu) in enumerate(DEMO_ARTICLES):
