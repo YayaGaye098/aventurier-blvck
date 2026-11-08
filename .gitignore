@@ -6,3 +6,10 @@ __pycache__/
 *.db
 .env
 .venv/
+
+# Fichiers envoyés depuis l'admin (nom = préfixe + 12 caractères aléatoires) : ce sont des données,
+# pas du code. Seules les photos de départ du site sont suivies par Git.
+backend/uploads/*_????????????.*
+backend/uploads/*.mp4
+backend/uploads/*.mov
+backend/uploads/*.webm
