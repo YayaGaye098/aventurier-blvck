@@ -1,18 +1,22 @@
 # Déploiement Render « Blueprint » : Render lit ce fichier et crée le service tout seul.
-# Le disque persistant (base + photos/vidéos) demande au minimum le plan Starter.
+#
+# VERSION DE TEST (plan gratuit) : pas de disque permanent, donc tout ce qui est ajouté dans
+# l'admin (photos, vidéos, articles…) est EFFACÉ à chaque mise à jour ou redémarrage.
+# Pour le vrai site : remplacer « plan: free » par « plan: starter » et enlever les « # »
+# devant le bloc « disk » ci-dessous.
 services:
   - type: web
     name: aventurier-blvck
     runtime: docker
-    plan: starter
+    plan: free
     region: frankfurt
     dockerfilePath: ./Dockerfile
     healthCheckPath: /api/health
     autoDeploy: true
-    disk:
-      name: donnees
-      mountPath: /var/data
-      sizeGB: 5
+    # disk:
+    #   name: donnees
+    #   mountPath: /var/data
+    #   sizeGB: 5
     envVars:
       - key: ENVIRONMENT
         value: production
