@@ -59,7 +59,7 @@ VRAIS_HOTELS = [
         nom="Villa de rêve au Lac Rose", ville="Lac Rose", adresse="Lac Rose",
         description="Découvrez cette magnifique villa composée de 4 chambres, 2 salons et 2 cuisines, "
                     "idéale pour vos séjours et moments de détente",
-        telephone="771034149", email="gaye.yaya@ugb.edu.sn", etoiles=3, featured=True,
+        telephone="771034149", email="laventurierblvck@gmail.com", etoiles=3, featured=True,
         video="/uploads/hotel_villa-lac-rose.mp4",
     ),
 ]
